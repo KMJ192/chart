@@ -4,6 +4,7 @@ import { buttonType } from './types';
 
 import classNames from 'classnames/bind';
 import style from './Button.module.scss';
+
 const cx = classNames.bind(style);
 
 export interface Props {
@@ -12,18 +13,18 @@ export interface Props {
   theme?: 'primary' | 'secondary';
 }
 
+function Button({ children, theme = buttonType.PRIMARY, onClick }: Props): JSX.Element {
+  return (
+    <button className={cx('default', theme)} onClick={onClick} type='button'>
+      {children && children}
+    </button>
+  );
+}
+
 Button.defaultProps = {
   children: undefined,
   onClick: undefined,
   theme: buttonType.PRIMARY,
 };
-
-function Button({ children, theme = buttonType.PRIMARY, onClick }: Props): JSX.Element {
-  return (
-    <button className={cx('default', theme)} onClick={onClick}>
-      {children && children}
-    </button>
-  );
-}
 
 export default Button;

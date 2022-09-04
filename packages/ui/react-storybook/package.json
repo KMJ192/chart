@@ -1,5 +1,5 @@
 {
-  "name": "@front-workspace/react-storybook",
+  "name": "@chart-library/react-storybook",
   "version": "1.0.0",
   "description": "",
   "main": "./build/index.js",
@@ -32,6 +32,7 @@
     "babel-preset-react-app": "^10.0.1",
     "classnames": "^2.3.1",
     "css-loader": "^6.7.1",
+    "csstype": "^3.1.0",
     "install-peers": "^1.0.4",
     "node-sass": "^7.0.1",
     "postcss": "^8.4.16",

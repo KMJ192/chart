@@ -1579,6 +1579,66 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@chart-library/chart-app@workspace:apps/chart-app":
+  version: 0.0.0-use.local
+  resolution: "@chart-library/chart-app@workspace:apps/chart-app"
+  dependencies:
+    "@types/node": 18.7.14
+    "@types/react": 18.0.18
+    "@types/react-dom": 18.0.6
+    eslint: 8.23.0
+    eslint-config-next: 12.2.5
+    next: 12.2.5
+    react: 18.2.0
+    react-dom: 18.2.0
+    typescript: 4.8.2
+  languageName: unknown
+  linkType: soft
+
+"@chart-library/react-storybook@workspace:packages/ui/react-storybook":
+  version: 0.0.0-use.local
+  resolution: "@chart-library/react-storybook@workspace:packages/ui/react-storybook"
+  dependencies:
+    "@babel/core": ^7.18.13
+    "@babel/preset-env": ^7.18.10
+    "@babel/preset-react": ^7.18.6
+    "@rollup/plugin-alias": ^3.1.9
+    "@rollup/plugin-babel": ^5.3.1
+    "@rollup/plugin-commonjs": ^22.0.2
+    "@rollup/plugin-image": ^2.1.1
+    "@rollup/plugin-node-resolve": ^13.3.0
+    "@storybook/preset-create-react-app": ^4.1.2
+    "@storybook/react": ^6.5.10
+    "@types/classnames": ^2.3.1
+    "@types/react": ^18.0.18
+    "@types/react-dom": ^18.0.6
+    "@types/rollup-plugin-peer-deps-external": ^2.2.1
+    autoprefixer: ^10.4.8
+    babel-loader: ^8.2.5
+    babel-preset-react-app: ^10.0.1
+    classnames: ^2.3.1
+    css-loader: ^6.7.1
+    csstype: ^3.1.0
+    install-peers: ^1.0.4
+    node-sass: ^7.0.1
+    postcss: ^8.4.16
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    resolve-url-loader: ^4.0.0
+    rollup: ^2.79.0
+    rollup-plugin-analyzer: ^4.0.0
+    rollup-plugin-peer-deps-external: ^2.2.4
+    rollup-plugin-postcss: ^4.0.2
+    rollup-plugin-terser: ^7.0.2
+    rollup-plugin-typescript2: ^0.33.0
+    sass-loader: ^10.0.5
+    style-loader: ^2.0.0
+    tsconfig-paths-webpack-plugin: ^4.0.0
+    typescript: ^4.8.2
+    typescript-plugin-css-modules: ^3.4.0
+  languageName: unknown
+  linkType: soft
+
 "@colors/colors@npm:1.5.0":
   version: 1.5.0
   resolution: "@colors/colors@npm:1.5.0"
@@ -1609,65 +1669,6 @@ __metadata:
   checksum: 9844dcc58a44399649926d5a17a2d53d529b80d3e8c3e9d0964ae198bac77ee6bb1cf44940f30cd9c2e300f7568ec82500be42ace6cacefb08aebf9905fe208e
   languageName: node
   linkType: hard
-
-"@front-workspace/chart-app@workspace:apps/chart-app":
-  version: 0.0.0-use.local
-  resolution: "@front-workspace/chart-app@workspace:apps/chart-app"
-  dependencies:
-    "@types/node": 18.7.14
-    "@types/react": 18.0.18
-    "@types/react-dom": 18.0.6
-    eslint: 8.23.0
-    eslint-config-next: 12.2.5
-    next: 12.2.5
-    react: 18.2.0
-    react-dom: 18.2.0
-    typescript: 4.8.2
-  languageName: unknown
-  linkType: soft
-
-"@front-workspace/react-storybook@workspace:packages/ui/react-storybook":
-  version: 0.0.0-use.local
-  resolution: "@front-workspace/react-storybook@workspace:packages/ui/react-storybook"
-  dependencies:
-    "@babel/core": ^7.18.13
-    "@babel/preset-env": ^7.18.10
-    "@babel/preset-react": ^7.18.6
-    "@rollup/plugin-alias": ^3.1.9
-    "@rollup/plugin-babel": ^5.3.1
-    "@rollup/plugin-commonjs": ^22.0.2
-    "@rollup/plugin-image": ^2.1.1
-    "@rollup/plugin-node-resolve": ^13.3.0
-    "@storybook/preset-create-react-app": ^4.1.2
-    "@storybook/react": ^6.5.10
-    "@types/classnames": ^2.3.1
-    "@types/react": ^18.0.18
-    "@types/react-dom": ^18.0.6
-    "@types/rollup-plugin-peer-deps-external": ^2.2.1
-    autoprefixer: ^10.4.8
-    babel-loader: ^8.2.5
-    babel-preset-react-app: ^10.0.1
-    classnames: ^2.3.1
-    css-loader: ^6.7.1
-    install-peers: ^1.0.4
-    node-sass: ^7.0.1
-    postcss: ^8.4.16
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    resolve-url-loader: ^4.0.0
-    rollup: ^2.79.0
-    rollup-plugin-analyzer: ^4.0.0
-    rollup-plugin-peer-deps-external: ^2.2.4
-    rollup-plugin-postcss: ^4.0.2
-    rollup-plugin-terser: ^7.0.2
-    rollup-plugin-typescript2: ^0.33.0
-    sass-loader: ^10.0.5
-    style-loader: ^2.0.0
-    tsconfig-paths-webpack-plugin: ^4.0.0
-    typescript: ^4.8.2
-    typescript-plugin-css-modules: ^3.4.0
-  languageName: unknown
-  linkType: soft
 
 "@gar/promisify@npm:^1.0.1, @gar/promisify@npm:^1.1.3":
   version: 1.1.3
@@ -5213,6 +5214,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chart-library@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "chart-library@workspace:."
+  dependencies:
+    "@types/node": ^18.7.14
+    "@types/react": ^18.0.18
+    "@types/react-dom": ^18.0.6
+    "@typescript-eslint/eslint-plugin": ^5.32.0
+    "@typescript-eslint/parser": ^5.32.0
+    babel-eslint: ^10.1.0
+    eslint: ^8.21.0
+    eslint-config-airbnb: ^19.0.4
+    eslint-config-prettier: ^8.5.0
+    eslint-plugin-import: ^2.26.0
+    eslint-plugin-jsx-a11y: ^6.6.1
+    eslint-plugin-prettier: ^4.2.1
+    eslint-plugin-react: ^7.30.1
+    eslint-plugin-react-hooks: ^4.6.0
+    prettier: ^2.7.1
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    resolve-url-loader: ^5.0.0
+    sass: ^1.54.8
+    sass-loader: ^10.0.5
+    style-loader: ^2.0.0
+    typescript: ^4.8.2
+  languageName: unknown
+  linkType: soft
+
 "chokidar@npm:>=3.0.0 <4.0.0, chokidar@npm:^3.4.1, chokidar@npm:^3.4.2":
   version: 3.5.3
   resolution: "chokidar@npm:3.5.3"
@@ -5992,7 +6022,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.2":
+"csstype@npm:^3.0.2, csstype@npm:^3.1.0":
   version: 3.1.0
   resolution: "csstype@npm:3.1.0"
   checksum: 644e986cefab86525f0b674a06889cfdbb1f117e5b7d1ce0fc55b0423ecc58807a1ea42ecc75c4f18999d14fc42d1d255f84662a45003a52bb5840e977eb2ffd
@@ -7670,35 +7700,6 @@ __metadata:
   checksum: 6080eba0793dce32f475141fb3d54cc15f84ee52e420ee22ac3ab0ad639dc95a1875bc6eb9c0e1140e94972a36a89dc5542491b85f1ab8df0c126241e0f1a61b
   languageName: node
   linkType: hard
-
-"front-workspace@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "front-workspace@workspace:."
-  dependencies:
-    "@types/node": ^18.7.14
-    "@types/react": ^18.0.18
-    "@types/react-dom": ^18.0.6
-    "@typescript-eslint/eslint-plugin": ^5.32.0
-    "@typescript-eslint/parser": ^5.32.0
-    babel-eslint: ^10.1.0
-    eslint: ^8.21.0
-    eslint-config-airbnb: ^19.0.4
-    eslint-config-prettier: ^8.5.0
-    eslint-plugin-import: ^2.26.0
-    eslint-plugin-jsx-a11y: ^6.6.1
-    eslint-plugin-prettier: ^4.2.1
-    eslint-plugin-react: ^7.30.1
-    eslint-plugin-react-hooks: ^4.6.0
-    prettier: ^2.7.1
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    resolve-url-loader: ^5.0.0
-    sass: ^1.54.8
-    sass-loader: ^10.0.5
-    style-loader: ^2.0.0
-    typescript: ^4.8.2
-  languageName: unknown
-  linkType: soft
 
 "fs-extra@npm:^10.0.0, fs-extra@npm:^10.1.0":
   version: 10.1.0

@@ -1,5 +1,5 @@
 {
-  "name": "@front-workspace/chart-app",
+  "name": "@chart-library/chart-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {

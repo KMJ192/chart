@@ -3,7 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "./build",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "typeRoots": ["./typings"],
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },

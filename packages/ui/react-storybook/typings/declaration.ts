@@ -27,3 +27,10 @@ declare module '*.svg' {
   const content: string;
   export default content;
 }
+
+declare interface Vector {
+  x: number;
+  y: number;
+}
+
+declare type ObjectType = { [key: string]: any };
