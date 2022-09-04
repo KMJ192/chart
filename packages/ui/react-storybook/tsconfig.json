@@ -1,0 +1,11 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "./build",
+    "jsx": "react",
+    "typeRoots": ["./typings"],
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
+  },
+  "include": [".", "src/**/*", "./typings", "declaration.d.ts"]
+}

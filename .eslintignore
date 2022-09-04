@@ -1,0 +1,10 @@
+build/*
+public/*
+declaration.d.ts
+webpack*
+babel*
+postcss*
+node_modules/*
+rollup.config.js
+package.json
+.eslintrc
