@@ -1,3 +1,4 @@
+import { hash } from '@src/utils/utils';
 import type { CanvasParam, CanvasLayer, CanvasLayerInfo } from './types';
 
 class Canvas {
@@ -13,7 +14,7 @@ class Canvas {
 
   private height: number;
 
-  constructor({ nodeId, canvasLayer, width, height }: CanvasParam) {
+  constructor({ nodeId, canvasLayerInfo, width, height }: CanvasParam) {
     const dpr = window.devicePixelRatio;
 
     this.node = document.getElementById(nodeId) as HTMLElement;
@@ -28,15 +29,19 @@ class Canvas {
 
     this.height = height;
 
-    canvasLayer.forEach((level: CanvasLayerInfo, idx) => {
+    canvasLayerInfo.forEach((level: CanvasLayerInfo, idx) => {
       const { type, id, style } = level;
       const canvas = document.createElement('canvas') as HTMLCanvasElement;
+      canvas.id = `${id}-${hash(id)}`;
       const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-      // Set canvas style
-      Object.entries(style).forEach(([key, value]) => {
-        (canvas.style as ObjectType)[key] = value;
-      });
+      if (style !== undefined) {
+        // Set canvas style
+        Object.entries(style).forEach(([key, value]) => {
+          (canvas.style as ObjectType)[key] = value;
+        });
+      }
+
       canvas.style.position = 'absolute';
       canvas.style.width = '100%';
 

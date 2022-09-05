@@ -1,20 +1,33 @@
+import type { GraphParam } from './types';
+
 import Canvas from '../Canvas';
-import { CanvasLayerInfo } from '../Canvas/types';
-import { GraphParam } from './types';
-
-import crypto from 'crypto';
-
-const hashCreator = crypto.createHash('sha512');
+import type { CanvasLayerInfo } from '../Canvas/types';
 
 class Graph {
   private canvas: Canvas;
 
-  private canvasLayer: CanvasLayerInfo;
+  private canvasLayerInfo: CanvasLayerInfo[];
 
-  constructor({ nodeId, width, height }: GraphParam) {
-    this.canvasLayer = [];
+  constructor({ nodeId, width, height, style }: GraphParam) {
+    this.canvasLayerInfo = [
+      {
+        type: 'main',
+        id: 'data-graph',
+        style,
+      },
+      {
+        type: 'animation',
+        id: 'guide-line',
+        style,
+      },
+      {
+        type: 'static',
+        id: 'data-static',
+        style,
+      },
+    ];
 
-    this.canvas = new Canvas({ nodeId, width, height });
+    this.canvas = new Canvas({ nodeId, width, height, canvasLayerInfo: this.canvasLayerInfo });
   }
 }
 

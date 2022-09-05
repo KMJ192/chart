@@ -1,7 +1,10 @@
+import type CSS from 'csstype';
+
 type GraphParam = {
   nodeId: string;
   width: number;
   height: number;
+  style: CSS.Properties;
 };
 
 interface Axis {

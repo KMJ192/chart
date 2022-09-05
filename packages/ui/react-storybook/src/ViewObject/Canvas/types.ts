@@ -3,7 +3,7 @@ import type CSS from 'csstype';
 interface CanvasLayerInfo {
   type: string;
   id: string;
-  style: Omit<Omit<CSS.Properties, 'position'>, 'width'>;
+  style?: Omit<Omit<CSS.Properties, 'position'>, 'width'>;
 }
 
 interface CanvasLayer extends Omit<CanvasLayerInfo, 'style'> {
@@ -13,7 +13,7 @@ interface CanvasLayer extends Omit<CanvasLayerInfo, 'style'> {
 
 type CanvasParam = {
   nodeId: string;
-  canvasLayer: CanvasLayerInfo[];
+  canvasLayerInfo: CanvasLayerInfo[];
   width: number;
   height: number;
 };

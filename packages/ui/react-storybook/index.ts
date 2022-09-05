@@ -1,1 +1,1 @@
-export { Btn as Button } from '@src/components/buttons/Button';
+export { default as Button } from '@src/components/buttons/Button';
