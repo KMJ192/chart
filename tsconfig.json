@@ -1,9 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@src/*": ["src/*"]
-    },
     "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "useDefineForClassFields": true,
