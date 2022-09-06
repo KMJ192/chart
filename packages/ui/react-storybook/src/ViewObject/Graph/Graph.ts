@@ -1,5 +1,14 @@
 // Graph Type
-import type { AxisData, Series, SeriesData, GraphParam, GraphType, RenderOptions } from './types';
+import type {
+  AxisData,
+  Series,
+  SeriesData,
+  GraphParam,
+  GraphType,
+  RenderOptions,
+  Padding,
+  Tick,
+} from './types';
 
 // Canvas Obj Info
 import Canvas from '../Canvas';
@@ -41,7 +50,7 @@ class Graph {
       unitsPerTick: 1,
       tickHeight: 3,
       tickColor: '#000',
-      output: ['0'],
+      output: [],
     },
     yAxisLeft: {
       name: 'y-left',
@@ -50,7 +59,7 @@ class Graph {
       unitsPerTick: 1,
       tickHeight: 3,
       tickColor: '#000',
-      output: ['0'],
+      output: [],
     },
     yAxisRight: {
       name: 'y-right',
@@ -59,7 +68,7 @@ class Graph {
       unitsPerTick: 1,
       tickHeight: 3,
       tickColor: '#000',
-      output: ['0'],
+      output: [],
     },
   };
 
@@ -68,7 +77,17 @@ class Graph {
     yRight: [],
   };
 
-  constructor({ nodeId, width, height, graphType, style, axis, series }: Partial<GraphParam>) {
+  constructor({
+    nodeId,
+    width,
+    height,
+    graphType,
+    style,
+    axis,
+    series,
+    padding,
+    tick,
+  }: Partial<GraphParam>) {
     if (width) {
       this.size.width = width;
     }
@@ -126,16 +145,45 @@ class Graph {
       });
     }
 
-    this.calculator = new GraphCalculator();
+    this.calculator = new GraphCalculator({
+      padding: {
+        top: padding?.top || 0,
+        bottom: padding?.bottom || 0,
+        left: padding?.left || 0,
+        right: padding?.right || 0,
+      },
+      tick: {
+        top: {
+          height: tick?.top?.height || 3,
+          width: tick?.top?.width || 1,
+        },
+        bottom: {
+          height: tick?.bottom?.height || 3,
+          width: tick?.bottom?.width || 1,
+        },
+        left: {
+          height: tick?.left?.height || 3,
+          width: tick?.left?.width || 1,
+        },
+        right: {
+          height: tick?.right?.height || 3,
+          width: tick?.right?.width || 1,
+        },
+      },
+    });
   }
 
   public render = (options: Partial<RenderOptions>) => {
     // if (options.legend) {}
     // if (options.tick) {}
     // if (options.tooltip) {}
-
-    this.canvas?.appendCanvasNode();
-    // this.canvas?.size;
+    if (this.canvas) {
+      this.canvas.appendCanvasNode();
+      const {
+        size: { width, height },
+      } = this.canvas;
+      this.calculator.initCanvasSize({ width, height });
+    }
 
     return () => {
       console.log('unmount');

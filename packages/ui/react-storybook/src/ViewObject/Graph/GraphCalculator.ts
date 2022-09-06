@@ -1,4 +1,4 @@
-import type { AxisPosition, Area } from './types';
+import type { AxisPosition, Area, Padding, Tick, GraphCalculatorParam } from './types';
 
 class GraphCalculator {
   private range: AxisPosition<number> = {
@@ -33,19 +33,86 @@ class GraphCalculator {
     },
   };
 
-  private width: number;
+  private canvasSize: Size = {
+    width: 0,
+    height: 0,
+  };
 
-  private height: number;
+  private axisSize: Size = {
+    width: 0,
+    height: 0,
+  };
 
-  constructor() {
-    this.width = 0;
-    this.height = 0;
+  private padding: Padding = {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  };
+
+  private tick: Tick<Size> = {
+    top: {
+      width: 1,
+      height: 3,
+    },
+    bottom: {
+      width: 1,
+      height: 3,
+    },
+    left: {
+      width: 1,
+      height: 3,
+    },
+    right: {
+      width: 1,
+      height: 3,
+    },
+  };
+
+  constructor({ padding, tick }: GraphCalculatorParam) {
+    this.padding = padding;
+
+    this.tick = tick;
   }
 
   // 1.Canvas의 크기 get
   public initCanvasSize = ({ width: canvasWidth, height: canvasHeight }: Size) => {
-    this.width = canvasWidth - this.startPoint.xAxis.x;
-    this.height = canvasHeight;
+    this.canvasSize.width = canvasWidth - this.startPoint.xAxis.x;
+    this.canvasSize.height = canvasHeight;
+  };
+
+  public calcRelations = () => {
+    const leftP = this.padding.left * 2;
+    const rightP = this.padding.right * 2;
+
+    this.axisSize.width =
+      this.canvasSize.width -
+      this.startPoint.xAxis.x -
+      leftP -
+      rightP -
+      this.tick.left.height -
+      this.tick.right.height;
+    this.axisSize.height =
+      this.canvasSize.height -
+      leftP -
+      this.tick.left.height -
+      this.padding.bottom -
+      this.tick.bottom.height; // 폰트 높이 만큼 수정
+
+    this.startPoint = {
+      xAxis: {
+        x: leftP + this.tick.left.height,
+        y: leftP + this.axisSize.height,
+      },
+      yAxisLeft: {
+        x: leftP + this.tick.left.height,
+        y: leftP + this.axisSize.height,
+      },
+      yAxisRight: {
+        x: leftP + this.tick.left.height + this.axisSize.width,
+        y: leftP + this.axisSize.height,
+      },
+    };
   };
 
   get xAxisRange(): number {

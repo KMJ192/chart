@@ -41,6 +41,8 @@ interface RenderOptions {
 
 type Padding = RectArea<number>;
 
+type Tick<T = Size> = RectArea<T>;
+
 type GraphParam = {
   nodeId: string;
   width: number;
@@ -50,6 +52,7 @@ type GraphParam = {
   series: Partial<SeriesData>;
   style: CSS.Properties;
   padding: Padding;
+  tick: Tick<Partial<Size>>;
 };
 
 // GraphCalculator type
@@ -58,8 +61,14 @@ interface Area {
   end: Vector;
 }
 
+type GraphCalculatorParam = {
+  padding: Padding;
+  tick: Tick<Size>;
+};
+
 export type {
   GraphParam,
+  GraphCalculatorParam,
   GraphType,
   Area,
   AxisPosition,
@@ -68,4 +77,6 @@ export type {
   Series,
   SeriesData,
   RenderOptions,
+  Padding,
+  Tick,
 };
