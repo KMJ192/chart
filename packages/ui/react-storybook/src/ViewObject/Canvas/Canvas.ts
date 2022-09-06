@@ -2,7 +2,7 @@ import { hash } from '@src/utils/utils';
 import type { CanvasParam, CanvasLayer, CanvasLayerInfo } from './types';
 
 class Canvas {
-  private node: HTMLElement;
+  private nodeId: string;
 
   private canvasContainer: HTMLElement;
 
@@ -14,10 +14,12 @@ class Canvas {
 
   private height: number;
 
+  private isAppend: boolean;
+
   constructor({ nodeId, canvasLayerInfo, width, height }: CanvasParam) {
     const dpr = window.devicePixelRatio;
 
-    this.node = document.getElementById(nodeId) as HTMLElement;
+    this.nodeId = nodeId;
 
     this.canvasContainer = document.createElement('div');
 
@@ -66,7 +68,7 @@ class Canvas {
       };
     });
 
-    this.node.appendChild(this.canvasContainer);
+    this.isAppend = false;
   }
 
   public correctionCanvas = () => {
@@ -97,6 +99,17 @@ class Canvas {
   // public drawRect = () => {};
 
   // public drawText = () => {};
+
+  // public clearArea = () => {};
+
+  // public clearCanvas () => {};
+
+  public appendCanvasNode = () => {
+    if (!this.isAppend) {
+      const node = document.getElementById(this.nodeId);
+      node?.appendChild(this.canvasContainer);
+    }
+  };
 
   get canvas() {
     return this.canvasLayer;

@@ -33,4 +33,18 @@ declare interface Vector {
   y: number;
 }
 
-declare type ObjectType = { [key: string]: any };
+declare interface ObjectType {
+  [key: string]: any;
+}
+
+declare interface Size {
+  width: number;
+  height: number;
+}
+
+declare interface RectArea<T> {
+  top: T;
+  bottom: T;
+  left: T;
+  right: T;
+}

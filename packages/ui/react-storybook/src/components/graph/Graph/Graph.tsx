@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
+
+// eslint-disable-next-line import/no-named-default
+import { default as LineGraph } from '@src/ViewObject/Graph';
 
 type Props = {
   type?: 'line';
 };
 
 function Graph({ type }: Props) {
-  return <div>Graph</div>;
+  const graph = useMemo(() => new LineGraph({ nodeId: 'line-graph' }), []);
+
+  useEffect(() => {
+    const unmount = graph.render({});
+
+    return () => {
+      unmount();
+    };
+  }, [graph]);
+
+  return <div id='line-graph'></div>;
 }
 
 Graph.defaultProps = {
