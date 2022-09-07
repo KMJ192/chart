@@ -8,14 +8,13 @@ type Props = {
 };
 
 function Graph({ type }: Props) {
-  const graph = useMemo(() => new LineGraph({ nodeId: 'line-graph' }), []);
+  const graph = useMemo(() => new LineGraph({ nodeId: 'line-graph', graphType: type }), [type]);
 
   useEffect(() => {
-    const unmount = graph.render({});
-
-    return () => {
-      unmount();
-    };
+    // const unmount = graph.render();
+    // return () => {
+    //   unmount();
+    // };
   }, [graph]);
 
   return <div id='line-graph'></div>;

@@ -28,13 +28,18 @@ declare module '*.svg' {
   export default content;
 }
 
+declare interface ObjectType {
+  [key: string]: any;
+}
+
+declare interface Bounds<T> {
+  start: T;
+  end: T;
+}
+
 declare interface Vector {
   x: number;
   y: number;
-}
-
-declare interface ObjectType {
-  [key: string]: any;
 }
 
 declare interface Size {

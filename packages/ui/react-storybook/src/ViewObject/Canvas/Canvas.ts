@@ -92,9 +92,46 @@ class Canvas {
     };
   };
 
-  // public drawLine = () => {};
+  public drawLine = (layerLevel: number, startPosition: Vector, endPosition: Vector) => {
+    const { ctx } = this.canvasLayer[layerLevel];
 
-  // public drawCycle = () => {};
+    ctx.save();
+
+    ctx.beginPath();
+    ctx.moveTo(startPosition.x, startPosition.y);
+    ctx.lineTo(endPosition.x, endPosition.y);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.restore();
+  };
+
+  public drawCycle = (layerLevel: number, position: Vector, radius: number, isFill?: boolean) => {
+    const { ctx } = this.canvasLayer[layerLevel];
+    const { x, y } = position;
+
+    ctx.save();
+
+    // ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+    if (isFill) {
+      ctx.fill();
+    }
+    // ctx.closePath();
+
+    ctx.restore();
+  };
+
+  public drawText = (layerLevel: number, position: Vector, text: string) => {
+    const { ctx } = this.canvasLayer[layerLevel];
+    const { x, y } = position;
+
+    ctx.save();
+
+    ctx.fillText(text, x, y);
+
+    ctx.restore();
+  };
 
   // public drawRect = () => {};
 
