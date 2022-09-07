@@ -229,7 +229,7 @@ class Graph {
     if (!nodeId) throw Error('Necessary value : nodeId ');
     if (!graphType) throw Error('Necessary value : graphType');
 
-    this.graphType = graphType || 'line';
+    this.graphType = graphType;
 
     this.canvasSize.width = width || 1800;
     this.canvasSize.height = height || 700;
@@ -246,10 +246,11 @@ class Graph {
     });
   }
 
-  public render(data: GraphDataParam, renderOptions: RenderOptions) {
+  public render(data: GraphDataParam, renderOptions?: RenderOptions) {
     this.canvas.appendCanvasNode();
+    console.log(data);
 
-    this.calculator.setMinMax(data.axis, data.series);
+    // this.calculator.setMinMax(data.axis, data.series);
 
     return () => {
       console.log('unmount');

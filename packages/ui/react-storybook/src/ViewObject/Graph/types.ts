@@ -10,10 +10,12 @@ interface Axis {
   unitsPerTick: number;
   tickSize: Size;
   tickColor: string;
+  output?: string[];
 }
 
 interface Series {
   name: string;
+  dep: 'bottom' | 'top';
   color: string;
   lineWidth: number;
   series: number[];
@@ -28,7 +30,10 @@ type GraphParam = {
 
 type GraphDataParam = {
   axis: RectArea<Axis>;
-  series: RectArea<Series>;
+  series: {
+    yLeft: Series[];
+    yRight: Series[];
+  };
 };
 
 type RenderOptions = {
