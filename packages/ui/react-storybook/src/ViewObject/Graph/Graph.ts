@@ -31,7 +31,7 @@ class Graph {
     height: 700,
   };
 
-  constructor({ graphType, nodeId, width, height }: Partial<GraphParam>) {
+  constructor({ graphType, nodeId, width, height, padding }: Partial<GraphParam>) {
     if (!nodeId) throw Error('Necessary value : nodeId ');
     if (!graphType) throw Error('Necessary value : graphType');
 
@@ -48,16 +48,37 @@ class Graph {
     });
 
     this.calculator = new Calculator({
+      graphType,
       canvasSize: { width: this.canvasSize.width, height: this.canvasSize.height },
+      padding: {
+        top: padding?.top || 0,
+        bottom: padding?.bottom || 0,
+        left: padding?.left || 0,
+        right: padding?.right || 0,
+      },
     });
   }
 
   public render(data: GraphDataParam, renderOptions?: Partial<RenderOptions>) {
+    // 1. canvas 노드 생성
     this.canvas.appendCanvasNode();
-    this.calculator.setMinMax(data);
+
+    // 2. 그래프 렌더링 옵션 설정
+    this.calculator.renderOptionSetter = {
+      series: renderOptions?.series,
+      axis: renderOptions?.axis,
+    };
+
+    // 3. 데이터 유효성 검사
+    this.calculator.validationCheck(data);
+
+    // 4. 최대값 최소값 검사 (range 설정)
+    this.calculator.minMaxSetter = data;
+
+    this.calculator.display();
 
     return () => {
-      console.log('unmount');
+      // console.log('unmount');
     };
   }
 }

@@ -16,7 +16,8 @@ interface Series {
   dep: 'bottom' | 'top';
   color: string;
   lineWidth: number;
-  series: number[];
+  type: Exclude<GraphType, 'line+bar'>;
+  data: number[] | number[][];
 }
 
 type GraphParam = {
@@ -24,6 +25,7 @@ type GraphParam = {
   graphType: GraphType;
   width: number;
   height: number;
+  padding: RectArea<number>;
 };
 
 type GraphDataParam = {
@@ -44,6 +46,8 @@ type RenderOptions = {
 
 type CalculatorParam = {
   canvasSize: Size;
+  padding: RectArea<number>;
+  graphType: GraphType;
 };
 
 export { GraphParam, GraphDataParam, GraphType, RenderOptions, CalculatorParam, Axis, Series };
