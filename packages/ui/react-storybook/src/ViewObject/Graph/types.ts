@@ -13,12 +13,24 @@ interface Axis {
 
 interface Series {
   name: string;
-  dep: 'bottom' | 'top';
-  color: string;
-  lineWidth: number;
-  type: Exclude<GraphType, 'line+bar'>;
   data: number[] | number[][];
+  dep?: 'bottom' | 'top';
+  color?: string;
+  lineWidth?: number;
+  barWidth?: number;
+  type?: Exclude<GraphType, 'line+bar'>;
 }
+
+type RenderOptions = {
+  axis: RectArea<boolean>;
+  series: {
+    left: boolean;
+    right: boolean;
+  };
+  text: RectArea<boolean>;
+  legend: boolean;
+  tooltip: boolean;
+};
 
 type GraphParam = {
   nodeId: string;
@@ -31,17 +43,9 @@ type GraphParam = {
 type GraphDataParam = {
   axis: Partial<RectArea<Partial<Axis>>>;
   series: Partial<{
-    yLeft: Partial<Series>[];
-    yRight: Partial<Series>[];
+    left: Partial<Series>[];
+    right: Partial<Series>[];
   }>;
-};
-
-type RenderOptions = {
-  axis: RectArea<boolean>;
-  series: RectArea<boolean>;
-  text: RectArea<boolean>;
-  legend: boolean;
-  tooltip: boolean;
 };
 
 type CalculatorParam = {

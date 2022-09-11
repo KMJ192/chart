@@ -101,12 +101,13 @@ class Calculator {
    * right y축, top x축 optional
    */
   private renderOption: {
-    series: RectArea<boolean>;
+    series: {
+      left: boolean;
+      right: boolean;
+    };
     axis: RectArea<boolean>;
   } = {
     series: {
-      top: false,
-      bottom: true,
       left: true,
       right: false,
     },
@@ -130,7 +131,10 @@ class Calculator {
 
   set renderOptionSetter(
     renderOption: Partial<{
-      series: Partial<RectArea<boolean>>;
+      series: {
+        left?: boolean;
+        right?: boolean;
+      };
       axis: Partial<RectArea<boolean>>;
     }>,
   ) {
@@ -148,14 +152,6 @@ class Calculator {
 
     if (typeof renderOption.axis?.right === 'boolean') {
       this.renderOption.axis.right = renderOption.axis.right;
-    }
-
-    if (typeof renderOption.series?.top === 'boolean') {
-      this.renderOption.series.top = renderOption.series.top;
-    }
-
-    if (typeof renderOption.series?.bottom === 'boolean') {
-      this.renderOption.series.bottom = renderOption.series.bottom;
     }
 
     if (typeof renderOption.series?.left === 'boolean') {
@@ -234,18 +230,20 @@ class Calculator {
         max: isSet.left.max,
         min: isSet.left.min,
       };
-      series.yLeft?.forEach((s: Partial<Series>) => {
+      series.left?.forEach((s: Partial<Series>) => {
         if (s?.data) {
           s.data.forEach((d: number | number[]) => {
             if (!isSet.left.max) {
               if (Array.isArray(d)) {
                 if (this.graphType === 'line') {
                   throw Error(
-                    `정의된 그래프 타입은 'line'이지만, series의 데이터로 2차원 배열이 올 수 없습니다.`,
+                    `정의된 그래프 타입이 'line'일때, series의 data로 2차원 배열이 올 수 없습니다.`,
                   );
                 }
                 if (s.type === 'line') {
-                  throw Error(`series의 타입이 'line'일 때 데이터로 2차원 배열이 올 수 없습니다.`);
+                  throw Error(
+                    `series의 타입이 'line'일때, series의 data로 2차원 배열이 올 수 없습니다.`,
+                  );
                 }
                 d.forEach((n) => {
                   this.max.left = Math.max(this.max.left, n);
@@ -258,11 +256,13 @@ class Calculator {
             if (!isSet.left.min) {
               if (Array.isArray(d)) {
                 if (s.type === 'line') {
-                  throw Error(`series의 타입이 'line'일 때 데이터로 2차원 배열이 올 수 없습니다.`);
+                  throw Error(
+                    `series의 타입이 'line'일때, series의 data로 2차원 배열이 올 수 없습니다.`,
+                  );
                 }
                 if (this.graphType === 'line') {
                   throw Error(
-                    `정의된 그래프 타입은 'line'이지만, series의 데이터로 2차원 배열이 올 수 없습니다.`,
+                    `정의된 그래프 타입이 'line'일때, series의 data로 2차원 배열이 올 수 없습니다.`,
                   );
                 }
                 d.forEach((n) => {
@@ -294,7 +294,6 @@ class Calculator {
       this.min.bottom = axis.bottom.min;
       isSet.bottom.min = true;
     }
-
     // ==== 2. bottom x축(필수 데이터) 최대 최소값 정의 ====
 
     // ==== 3. right y축(옵션 데이터) 최대 최소값 정의 ====
