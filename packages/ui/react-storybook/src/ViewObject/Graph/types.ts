@@ -6,7 +6,6 @@ interface Axis {
   max: number;
   min: number;
   unitsPerTick: number;
-  tickSize: Size;
   tickColor: string;
   output?: string[];
 }
@@ -38,7 +37,8 @@ type GraphParam = {
   graphType: GraphType;
   width: number;
   height: number;
-  padding: RectArea<number>;
+  padding: Partial<RectArea<number>>;
+  tickSize: Partial<RectArea<Size>>;
 };
 
 type GraphDataParam = {
@@ -50,9 +50,9 @@ type GraphDataParam = {
 };
 
 type CalculatorParam = {
-  canvasSize: Size;
   padding: RectArea<number>;
   graphType: GraphType;
+  tickSize: RectArea<Size>;
 };
 
 export { GraphParam, GraphDataParam, GraphType, RenderOptions, CalculatorParam, Axis, Series };

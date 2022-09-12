@@ -1,6 +1,6 @@
 import { cloneDeep } from 'lodash';
 
-import type { CalculatorParam, GraphDataParam, GraphType, Series } from './types';
+import type { Axis, CalculatorParam, GraphDataParam, GraphType, Series } from './types';
 
 // 데이터 연산
 class Calculator {
@@ -22,6 +22,11 @@ class Calculator {
     right: Infinity,
   };
 
+  private size: Size = {
+    width: 0,
+    height: 0,
+  };
+
   // canvas padding
   private padding: RectArea<number> = {
     top: 0,
@@ -30,10 +35,23 @@ class Calculator {
     right: 0,
   };
 
-  // canvas 크기
-  private canvasSize: Size = {
-    width: 0,
-    height: 0,
+  private tickSize: RectArea<Size> = {
+    top: {
+      width: 1,
+      height: 3,
+    },
+    bottom: {
+      width: 1,
+      height: 3,
+    },
+    left: {
+      width: 1,
+      height: 3,
+    },
+    right: {
+      width: 1,
+      height: 3,
+    },
   };
 
   private range: RectArea<number> = {
@@ -44,6 +62,8 @@ class Calculator {
   };
 
   private scale: number;
+
+  private middlePosition: number;
 
   private startPoint: RectArea<Vector> = {
     top: {
@@ -118,14 +138,16 @@ class Calculator {
     },
   };
 
-  constructor({ canvasSize, padding, graphType }: CalculatorParam) {
+  constructor({ padding, graphType, tickSize }: CalculatorParam) {
     this.graphType = graphType;
-
-    this.canvasSize = canvasSize;
 
     this.padding = padding;
 
+    this.tickSize = tickSize;
+
     this.scale = 0;
+
+    this.middlePosition = 0;
   }
 
   set renderOptionSetter(
@@ -443,11 +465,86 @@ class Calculator {
     if (!isSet.top.min) throw Error(`top x axis의 최소값을 특정할 수 없습니다.`);
   };
 
-  public setElementArea = () => {};
+  public setRange = (axis: Partial<RectArea<Partial<Axis>>>) => {
+    this.range.bottom = this.max.bottom - this.min.bottom;
+    this.range.top = this.max.top - this.min.top;
+
+    this.range.left = this.max.left - this.min.left;
+    // range가 나누어 떨어지지 않을 경우 => 추후 테스트
+    const leftUnitPerTick = axis.right?.unitsPerTick || 1;
+    const leftMod = this.range.left % leftUnitPerTick;
+    if (leftMod !== 0) {
+      this.max.left += leftUnitPerTick - leftMod;
+      this.range.left = this.max.left - this.min.left;
+    }
+
+    this.range.right = this.max.right - this.min.right;
+    const rightUnitPerTick = axis.right?.unitsPerTick || 1;
+    const rightMod = this.range.right % rightUnitPerTick;
+    if (rightMod !== 0) {
+      this.max.right += rightUnitPerTick - rightMod;
+      this.range.right += this.max.right - this.min.right;
+    }
+  };
+
+  public setSize = (canvas: HTMLCanvasElement) => {
+    this.size.width =
+      canvas.width -
+      this.padding.left * 2 -
+      this.padding.right * 2 -
+      this.tickSize.left.height -
+      this.tickSize.right.height -
+      this.padding.left * 2 -
+      this.tickSize.left.height;
+
+    this.size.height =
+      canvas.height -
+      this.padding.bottom -
+      this.padding.top -
+      this.tickSize.bottom.height -
+      this.tickSize.top.height -
+      this.padding.left * 2 -
+      this.tickSize.left.height;
+  };
+
+  public setStartPoint = () => {
+    this.startPoint.bottom.x = this.padding.left * 2 + this.tickSize.left.height;
+    this.startPoint.bottom.y = this.padding.left * 2 + this.size.height;
+    this.startPoint.left = {
+      x: this.startPoint.bottom.x,
+      y: this.startPoint.bottom.y,
+    };
+    this.startPoint.right = {
+      x: this.startPoint.left.x + this.size.width,
+      y: this.startPoint.left.y,
+    };
+  };
+
+  public setArea = () => {
+    this.area.start = {
+      x: this.startPoint.bottom.x,
+      y: this.startPoint.bottom.y,
+    };
+    this.area.end = {
+      x: this.startPoint.bottom.x + this.size.width,
+      y: this.startPoint.bottom.y - this.size.height,
+    };
+  };
+
+  public setElementArea = () => {
+    this.middlePosition = this.area.start.x + (this.area.end.x - this.area.start.x) / 2;
+
+    this.elementArea = {
+      top: (this.area.end.x - this.area.start.x) / this.range.top,
+      bottom: (this.area.end.x - this.area.start.x) / this.range.bottom,
+      left: (this.area.start.y - this.area.end.y) / this.range.left,
+      right: (this.area.start.y - this.area.end.y) / this.range.right,
+    };
+  };
 
   public display = () => {
     // eslint-disable-next-line no-console
-    console.log(this.min, this.max);
+    console.log(this);
   };
 }
 

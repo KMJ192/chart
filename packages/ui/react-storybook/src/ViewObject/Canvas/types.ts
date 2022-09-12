@@ -13,9 +13,9 @@ interface CanvasLayer extends Omit<CanvasLayerInfo, 'style'> {
 
 type CanvasParam = {
   nodeId: string;
-  canvasLayerInfo: CanvasLayerInfo[];
   width: number;
   height: number;
+  canvasLayerInfo: CanvasLayerInfo[];
 };
 
 export type { CanvasParam, CanvasLayer, CanvasLayerInfo };

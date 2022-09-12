@@ -31,7 +31,7 @@ class Graph {
     height: 700,
   };
 
-  constructor({ graphType, nodeId, width, height, padding }: Partial<GraphParam>) {
+  constructor({ graphType, nodeId, width, height, padding, tickSize }: Partial<GraphParam>) {
     if (!nodeId) throw Error('Necessary value : nodeId ');
     if (!graphType) throw Error('Necessary value : graphType');
 
@@ -49,12 +49,29 @@ class Graph {
 
     this.calculator = new Calculator({
       graphType,
-      canvasSize: { width: this.canvasSize.width, height: this.canvasSize.height },
       padding: {
         top: padding?.top || 0,
         bottom: padding?.bottom || 0,
         left: padding?.left || 0,
         right: padding?.right || 0,
+      },
+      tickSize: {
+        top: {
+          width: tickSize?.top?.width || 1,
+          height: tickSize?.top?.height || 3,
+        },
+        bottom: {
+          width: tickSize?.top?.width || 1,
+          height: tickSize?.top?.height || 3,
+        },
+        left: {
+          width: tickSize?.top?.width || 1,
+          height: tickSize?.top?.height || 3,
+        },
+        right: {
+          width: tickSize?.top?.width || 1,
+          height: tickSize?.top?.height || 3,
+        },
       },
     });
   }
@@ -72,8 +89,19 @@ class Graph {
     // 3. 데이터 유효성 검사
     this.calculator.validationCheck(data);
 
-    // 4. 최대값 최소값 검사 (range 설정)
+    // 4. 최대값 최소값 설정
     this.calculator.setMinMax(data);
+
+    // 5. axis 데이터 별 range 설정
+    this.calculator.setRange(data.axis);
+
+    this.calculator.setSize(this.canvas.getCanvas[0].canvas);
+
+    // 7. axis 별 시작점 설정
+    this.calculator.setStartPoint();
+
+    // 8. 그래프 내부 영역
+    this.calculator.setArea();
 
     this.calculator.setElementArea();
 

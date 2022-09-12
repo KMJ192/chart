@@ -148,11 +148,11 @@ class Canvas {
     }
   };
 
-  get canvas() {
+  get getCanvas(): CanvasLayer[] {
     return this.canvasLayer;
   }
 
-  get size() {
+  get size(): Size {
     return {
       width: this.width,
       height: this.height,
