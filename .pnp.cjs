@@ -3998,6 +3998,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["css-loader", "virtual:e7d20211148fbcbb1ee2c0a0e35f4dbb5bc0ee2610480901c6507961577a6570b2248c293eebd5abe0f461b72f36fa3c31aeda28bb3eec3f8a36bc4da39bef1a#npm:6.7.1"],\
             ["csstype", "npm:3.1.0"],\
             ["install-peers", "npm:1.0.4"],\
+            ["lodash", "npm:4.17.21"],\
             ["node-sass", "npm:7.0.1"],\
             ["postcss", "npm:8.4.16"],\
             ["react", "npm:18.2.0"],\

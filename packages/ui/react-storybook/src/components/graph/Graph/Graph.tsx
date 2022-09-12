@@ -56,39 +56,39 @@ const axis: RectArea<Partial<Axis>> = {
 };
 
 const series: {
-  yLeft: Partial<Series>[];
-  yRight: Partial<Series>[];
+  left: Partial<Series>[];
+  right: Partial<Series>[];
 } = {
-  yLeft: [
+  left: [
     {
       name: 'left1',
-      dep: 'bottom',
-      color: 'red',
+      dependsXAxis: 'bottom',
+      lineColor: 'red',
       lineWidth: 1,
-      data: [1, 4, 6, 1, 7, 9, 6, 3, 5, 2],
+      lineData: [1, 4, 6, 1, 7, 9, 6, 3, 5, 2],
     },
     {
       name: 'left2',
-      dep: 'bottom',
-      color: 'blue',
+      dependsXAxis: 'bottom',
+      lineColor: 'blue',
       lineWidth: 1,
-      data: [4, 2, 7, 8, 4, 6, 3, 1, 3, 2],
+      barData: [[4], [2], [7], [8], [4], [6], [3], [1], [3], [2]],
     },
   ],
-  yRight: [
+  right: [
     {
       name: 'right1',
-      dep: 'bottom',
-      color: 'green',
+      dependsXAxis: 'bottom',
+      lineColor: 'green',
       lineWidth: 1,
-      data: [3, 4, 6, 2, 1, 4, 2, 6, 6, 3],
+      lineData: [3, 4, 6, 2, 1, 4, 2, 6, 6, 3],
     },
     {
       name: 'right2',
-      dep: 'bottom',
-      color: 'black',
+      dependsXAxis: 'bottom',
+      lineColor: 'black',
       lineWidth: 1,
-      data: [5, 2, 3, 4, 7, 6, 5, 2, 3, 9],
+      lineData: [5, 2, 3, 4, 7, 6, 5, 2, 3, 9],
     },
   ],
 };

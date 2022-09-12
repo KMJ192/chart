@@ -13,12 +13,13 @@ interface Axis {
 
 interface Series {
   name: string;
-  data: number[] | number[][];
-  dep?: 'bottom' | 'top';
-  color?: string;
-  lineWidth?: number;
+  barData?: number[] | number[][];
+  barColor?: string[];
   barWidth?: number;
-  type?: Exclude<GraphType, 'line+bar'>;
+  lineData?: number[];
+  lineColor?: string;
+  lineWidth?: number;
+  dependsXAxis?: 'bottom' | 'top';
 }
 
 type RenderOptions = {

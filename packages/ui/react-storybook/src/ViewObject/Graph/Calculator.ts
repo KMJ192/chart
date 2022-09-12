@@ -1,3 +1,5 @@
+import { cloneDeep } from 'lodash';
+
 import type { CalculatorParam, GraphDataParam, GraphType, Series } from './types';
 
 // 데이터 연산
@@ -189,13 +191,26 @@ class Calculator {
       // eslint-disable-next-line no-console
       console.warn(`No top axis info. (But setted render option true)`);
     }
+
+    // 7. optional data의 입력 data 유무에 따른 render option 조정
+    const { axis } = data;
+    // 7-1. right y축 정보가 없는 경우
+    if (!axis.right) {
+      this.renderOption.axis.right = false;
+      this.renderOption.series.right = false;
+    }
+    // 7-2. top x축 정보가 없는 경우
+    if (!axis.top) {
+      this.renderOption.axis.top = false;
+    }
   };
 
   set minMaxSetter(data: GraphDataParam) {
+    // top, right는 렌더 옵션에 따라 설정
     const isSet: RectArea<{ max: boolean; min: boolean }> = {
       top: {
-        max: false,
-        min: false,
+        max: !this.renderOption.axis.top,
+        min: !this.renderOption.axis.top,
       },
       bottom: {
         max: false,
@@ -206,72 +221,166 @@ class Calculator {
         min: false,
       },
       right: {
-        max: false,
-        min: false,
+        max: !this.renderOption.axis.right,
+        min: !this.renderOption.axis.right,
       },
     };
 
     const { axis, series } = data;
 
-    // ==== 1. left y축(필수 데이터) 최대 최소값 정의 ====
+    // ======= 1. max, min 입력 여부 및 입력값 확인 =======
+    // ===== 1-1. left axis =====
     if (typeof axis.left?.max === 'number') {
-      // max값이 입력값으로 들어 온 경우
       this.max.left = axis.left.max;
       isSet.left.max = true;
     }
-
     if (typeof axis.left?.min === 'number') {
       this.min.left = axis.left.min;
       isSet.left.min = true;
     }
+    // ===== 1-2. bottom axis =====
+    if (typeof axis.right?.max === 'number') {
+      this.max.right = axis.right.max;
+      isSet.right.max = true;
+    }
+    if (typeof axis.right?.min === 'number') {
+      this.min.right = axis.right.min;
+      isSet.right.min = true;
+    }
+    // ===== 1-3. right axis =====
+    if (typeof axis.bottom?.max === 'number') {
+      this.max.bottom = axis.bottom.max;
+      isSet.bottom.max = true;
+    }
+    if (typeof axis.bottom?.min === 'number') {
+      this.min.bottom = axis.bottom.min;
+      isSet.bottom.min = true;
+    }
+    // ===== 1-4. top axis =====
+    if (typeof axis.top?.max === 'number') {
+      this.max.top = axis.top.max;
+      isSet.top.max = true;
+    }
+    if (typeof axis.top?.min === 'number') {
+      this.min.top = axis.top.min;
+      isSet.top.min = true;
+    }
+    // ======= 1. max, min 입력 여부 및 입력값 확인 =======
 
+    // ======= 2. axis별 max, min값 정의 =======
+    if (
+      !isSet.left.max ||
+      !isSet.left.min ||
+      !isSet.bottom.max ||
+      !isSet.bottom.min ||
+      !isSet.right.max ||
+      !isSet.right.min ||
+      !isSet.top.max ||
+      !isSet.top.min
+    ) {
+      const tmp = cloneDeep(isSet);
+      // 2-1. left axis 참조 -> left y축 및 종속 x축(top or bottom)의 max, min
+      series.left?.forEach((s: Partial<Series>) => {
+        const isLineData = Array.isArray(s.lineData);
+        const isBarData = Array.isArray(s.barData);
+        const xAxisPos = s.dependsXAxis || 'bottom';
+        if (isLineData) {
+          if (xAxisPos === 'bottom' && !isSet.bottom.max) {
+            this.max.bottom = s.lineData?.length || 0;
+            // x축 min값 정하는 방법
+            tmp.bottom.max = true;
+          }
+          if (xAxisPos === 'top' && !isSet.top.max) {
+            this.min.top = Math.max(this.max.top, s.lineData?.length || 0);
+            tmp.top.max = true;
+          }
+          s.lineData?.forEach((_data: number) => {});
+        }
+        if (isBarData) {
+          s.barData?.forEach((_data: number | number[]) => {
+            if (Array.isArray(_data)) {
+              _data.forEach((d: number) => {});
+            }
+          });
+        }
+      });
+
+      // 2-2. right axis 참조 -> right y축 및 종속 x축(top or bottom)의 max, min
+      series.right?.forEach((s: Partial<Series>) => {
+        const isLineData = Array.isArray(s.lineData);
+        const isBarData = Array.isArray(s.barData);
+        const xAxisPos = s.dependsXAxis || 'bottom';
+        if (isLineData) {
+          s.lineData?.forEach((_data: number) => {
+            if (!isSet.left.max) {
+              this.max.left = Math.max(this.max.left, _data);
+              tmp.left.max = true;
+            }
+            if (!isSet.left.min) {
+              this.min.left = Math.min(this.min.left, _data);
+              tmp.left.min = true;
+            }
+          });
+        }
+        if (isBarData) {
+          s.barData?.forEach((_data: number | number[]) => {
+            if (Array.isArray(_data)) {
+              _data.forEach((d: number) => {});
+            }
+          });
+        }
+      });
+
+      isSet.bottom = cloneDeep(tmp.bottom);
+      isSet.left = cloneDeep(tmp.left);
+      isSet.right = cloneDeep(tmp.right);
+      isSet.top = cloneDeep(tmp.top);
+    }
+    // ======= 2. axis별 max, min값 정의 =======
+
+    // ==== 1. left y축(필수 데이터) 최대 최소값 정의 ====
     if (!isSet.left.max || !isSet.left.min) {
       const tmpFlag = {
         max: isSet.left.max,
         min: isSet.left.min,
       };
       series.left?.forEach((s: Partial<Series>) => {
-        if (s?.data) {
-          s.data.forEach((d: number | number[]) => {
+        const isLineData = Array.isArray(s.lineData);
+        const isBarData = Array.isArray(s.barData);
+        if (isLineData) {
+          s.lineData?.forEach((_data: number) => {
             if (!isSet.left.max) {
-              if (Array.isArray(d)) {
-                if (this.graphType === 'line') {
-                  throw Error(
-                    `정의된 그래프 타입이 'line'일때, series의 data로 2차원 배열이 올 수 없습니다.`,
-                  );
-                }
-                if (s.type === 'line') {
-                  throw Error(
-                    `series의 타입이 'line'일때, series의 data로 2차원 배열이 올 수 없습니다.`,
-                  );
-                }
-                d.forEach((n) => {
-                  this.max.left = Math.max(this.max.left, n);
-                });
-              } else {
-                this.max.left = Math.max(this.max.left, d);
-              }
+              this.max.left = Math.max(this.max.left, _data);
               tmpFlag.max = true;
             }
             if (!isSet.left.min) {
-              if (Array.isArray(d)) {
-                if (s.type === 'line') {
-                  throw Error(
-                    `series의 타입이 'line'일때, series의 data로 2차원 배열이 올 수 없습니다.`,
-                  );
-                }
-                if (this.graphType === 'line') {
-                  throw Error(
-                    `정의된 그래프 타입이 'line'일때, series의 data로 2차원 배열이 올 수 없습니다.`,
-                  );
-                }
-                d.forEach((n) => {
-                  this.min.left = Math.min(this.min.left, n);
-                });
-              } else {
-                this.min.left = Math.min(this.min.left, d);
-              }
+              this.min.left = Math.min(this.min.left, _data);
               tmpFlag.min = true;
+            }
+          });
+        }
+        if (isBarData) {
+          s.barData?.forEach((_data: number | number[]) => {
+            if (Array.isArray(_data)) {
+              _data.forEach((d: number) => {
+                if (!isSet.left.max) {
+                  this.max.left = Math.max(this.max.left, d);
+                  tmpFlag.max = true;
+                }
+                if (!isSet.left.min) {
+                  this.min.left = Math.min(this.min.left, d);
+                  tmpFlag.min = true;
+                }
+              });
+            } else {
+              if (!isSet.left.max) {
+                this.max.left = Math.max(this.max.left, _data);
+                tmpFlag.max = true;
+              }
+              if (!isSet.left.min) {
+                this.min.left = Math.min(this.min.left, _data);
+                tmpFlag.min = true;
+              }
             }
           });
         }
@@ -283,24 +392,6 @@ class Calculator {
     if (!isSet.left.max) throw Error(`left axis의 최대값을 특정할 수 없습니다.`);
     if (!isSet.left.min) throw Error(`left axis의 최소값을 특정할 수 없습니다.`);
     // ==== 1. left y축(필수 데이터) 최대 최소값 정의 ====
-
-    // ==== 2. bottom x축(필수 데이터) 최대 최소값 정의 ====
-    if (typeof axis.bottom?.max === 'number') {
-      this.max.bottom = axis.bottom.max;
-      isSet.bottom.max = true;
-    }
-
-    if (typeof axis.bottom?.min === 'number') {
-      this.min.bottom = axis.bottom.min;
-      isSet.bottom.min = true;
-    }
-    // ==== 2. bottom x축(필수 데이터) 최대 최소값 정의 ====
-
-    // ==== 3. right y축(옵션 데이터) 최대 최소값 정의 ====
-    // ==== 3. right y축(옵션 데이터) 최대 최소값 정의 ====
-
-    // ==== 4. top x축(옵션 데이터) 최대 최소값 정의 ====
-    // ==== 4. top x축(옵션 데이터) 최대 최소값 정의 ====
   }
 
   public display = () => {
