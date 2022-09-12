@@ -73,7 +73,9 @@ class Graph {
     this.calculator.validationCheck(data);
 
     // 4. 최대값 최소값 검사 (range 설정)
-    this.calculator.minMaxSetter = data;
+    this.calculator.setMinMax(data);
+
+    this.calculator.setElementArea();
 
     this.calculator.display();
 

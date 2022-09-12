@@ -11,8 +11,8 @@ type Props = {
 const axis: RectArea<Partial<Axis>> = {
   top: {
     name: 'x-top',
-    max: 10,
-    min: 0,
+    // max: 10,
+    // min: 0,
     unitsPerTick: 1,
     tickSize: {
       width: 1,
@@ -22,8 +22,8 @@ const axis: RectArea<Partial<Axis>> = {
   },
   bottom: {
     name: 'x-bottom',
-    max: 10,
-    min: 0,
+    // max: 10,
+    // min: 0,
     unitsPerTick: 1,
     tickSize: {
       width: 1,
@@ -34,8 +34,8 @@ const axis: RectArea<Partial<Axis>> = {
   left: {
     name: 'y-left',
     unitsPerTick: 1,
-    max: 10,
-    min: 0,
+    // max: 10,
+    // min: 0,
     tickSize: {
       width: 1,
       height: 3,
@@ -44,8 +44,8 @@ const axis: RectArea<Partial<Axis>> = {
   },
   right: {
     name: 'y-right',
-    max: 10,
-    min: 0,
+    // max: 10,
+    // min: 0,
     unitsPerTick: 1,
     tickSize: {
       width: 1,
@@ -72,6 +72,7 @@ const series: {
       dependsXAxis: 'bottom',
       lineColor: 'blue',
       lineWidth: 1,
+      lineData: [8, 2, 7, 1, 3, 1, 23, 11, 4, 3],
       barData: [[4], [2], [7], [8], [4], [6], [3], [1], [3], [2]],
     },
   ],
@@ -81,14 +82,14 @@ const series: {
       dependsXAxis: 'bottom',
       lineColor: 'green',
       lineWidth: 1,
-      lineData: [3, 4, 6, 2, 1, 4, 2, 6, 6, 3],
+      lineData: [3, 4, 6, 2, 1, 4, 2, 6, 0, 3],
     },
     {
       name: 'right2',
-      dependsXAxis: 'bottom',
+      dependsXAxis: 'top',
       lineColor: 'black',
       lineWidth: 1,
-      lineData: [5, 2, 3, 4, 7, 6, 5, 2, 3, 9],
+      lineData: [-1, -2, -3, -4, -7, -6, -5, -2, -3, -9],
     },
   ],
 };

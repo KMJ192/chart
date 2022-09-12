@@ -3988,6 +3988,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@storybook/preset-create-react-app", "virtual:e7d20211148fbcbb1ee2c0a0e35f4dbb5bc0ee2610480901c6507961577a6570b2248c293eebd5abe0f461b72f36fa3c31aeda28bb3eec3f8a36bc4da39bef1a#npm:4.1.2"],\
             ["@storybook/react", "virtual:e7d20211148fbcbb1ee2c0a0e35f4dbb5bc0ee2610480901c6507961577a6570b2248c293eebd5abe0f461b72f36fa3c31aeda28bb3eec3f8a36bc4da39bef1a#npm:6.5.10"],\
             ["@types/classnames", "npm:2.3.1"],\
+            ["@types/lodash", "npm:4.14.185"],\
             ["@types/react", "npm:18.0.18"],\
             ["@types/react-dom", "npm:18.0.6"],\
             ["@types/rollup-plugin-peer-deps-external", "npm:2.2.1"],\
@@ -6310,6 +6311,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-lodash-npm-4.14.184-aec91d64ae-6d9a4d67f7.zip/node_modules/@types/lodash/",\
           "packageDependencies": [\
             ["@types/lodash", "npm:4.14.184"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:4.14.185", {\
+          "packageLocation": "./.yarn/cache/@types-lodash-npm-4.14.185-974674435a-f81d13da5e.zip/node_modules/@types/lodash/",\
+          "packageDependencies": [\
+            ["@types/lodash", "npm:4.14.185"]\
           ],\
           "linkType": "HARD"\
         }]\
