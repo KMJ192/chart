@@ -1,10 +1,78 @@
 import { cloneDeep } from 'lodash';
 
-import type { Axis, CalculatorParam, GraphDataParam, GraphType, Series } from './types';
+import type { CalculatorParam } from './types';
+import type { Axis, GraphDataParam, GraphType, Series } from '../types';
 
 // 데이터 연산
 class Calculator {
   private graphType: GraphType;
+
+  // canvas padding
+  private padding: RectArea<number> = {
+    top: 1,
+    bottom: 1,
+    left: 1,
+    right: 1,
+  };
+
+  // tick size
+  // private tickSize: RectArea<Size> = {
+  //   top: {
+  //     width: 1,
+  //     height: 3,
+  //   },
+  //   bottom: {
+  //     width: 1,
+  //     height: 3,
+  //   },
+  //   left: {
+  //     width: 1,
+  //     height: 3,
+  //   },
+  //   right: {
+  //     width: 1,
+  //     height: 3,
+  //   },
+  // };
+
+  private axisStyle: RectArea<{
+    lineWidth: number;
+    lineColor: string;
+    tickSize: Size;
+  }> = {
+    top: {
+      lineWidth: 1,
+      lineColor: '#000',
+      tickSize: {
+        width: 1,
+        height: 3,
+      },
+    },
+    bottom: {
+      lineWidth: 1,
+      lineColor: '#000',
+      tickSize: {
+        width: 1,
+        height: 3,
+      },
+    },
+    left: {
+      lineWidth: 1,
+      lineColor: '#000',
+      tickSize: {
+        width: 1,
+        height: 3,
+      },
+    },
+    right: {
+      lineWidth: 1,
+      lineColor: '#000',
+      tickSize: {
+        width: 1,
+        height: 3,
+      },
+    },
+  };
 
   // axis별 최대값
   private max: RectArea<number> = {
@@ -25,33 +93,6 @@ class Calculator {
   private size: Size = {
     width: 0,
     height: 0,
-  };
-
-  // canvas padding
-  private padding: RectArea<number> = {
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  };
-
-  private tickSize: RectArea<Size> = {
-    top: {
-      width: 1,
-      height: 3,
-    },
-    bottom: {
-      width: 1,
-      height: 3,
-    },
-    left: {
-      width: 1,
-      height: 3,
-    },
-    right: {
-      width: 1,
-      height: 3,
-    },
   };
 
   private range: RectArea<number> = {
@@ -143,11 +184,14 @@ class Calculator {
 
     this.padding = padding;
 
-    this.tickSize = tickSize;
-
     this.scale = 0;
 
     this.middlePosition = 0;
+
+    this.axisStyle.top.tickSize = tickSize.top;
+    this.axisStyle.bottom.tickSize = tickSize.bottom;
+    this.axisStyle.left.tickSize = tickSize.left;
+    this.axisStyle.right.tickSize = tickSize.right;
   }
 
   set renderOptionSetter(
@@ -182,6 +226,35 @@ class Calculator {
     if (typeof renderOption.series?.right === 'boolean') {
       this.renderOption.series.right = renderOption.series.right;
     }
+  }
+
+  get renderOptionGetter(): {
+    series: {
+      left: boolean;
+      right: boolean;
+    };
+    axis: RectArea<boolean>;
+  } {
+    return this.renderOption;
+  }
+
+  get axisStyleGetter(): RectArea<{
+    lineWidth: number;
+    lineColor: string;
+    tickSize: Size;
+  }> {
+    return this.axisStyle;
+  }
+
+  get axisStartPointGetter(): RectArea<Vector> {
+    return this.startPoint;
+  }
+
+  get sizeGetter(): Size {
+    return {
+      width: this.size.width,
+      height: this.size.height,
+    };
   }
 
   public validationCheck = (data: GraphDataParam) => {
@@ -222,6 +295,13 @@ class Calculator {
     if (axis.top) {
       this.renderOption.axis.top = true;
     }
+  };
+
+  public setAxisStyle = (axis: Partial<RectArea<Partial<Axis>>>) => {
+    this.axisStyle.top.lineWidth = axis.top?.lineWidth || 1;
+    this.axisStyle.bottom.lineWidth = axis.bottom?.lineWidth || 1;
+    this.axisStyle.left.lineWidth = axis.left?.lineWidth || 1;
+    this.axisStyle.right.lineWidth = axis.right?.lineWidth || 1;
   };
 
   public setMinMax = (data: GraphDataParam) => {
@@ -492,23 +572,23 @@ class Calculator {
       canvas.width -
       this.padding.left * 2 -
       this.padding.right * 2 -
-      this.tickSize.left.height -
-      this.tickSize.right.height -
+      this.axisStyle.left.tickSize.height -
+      this.axisStyle.right.tickSize.height -
       this.padding.left * 2 -
-      this.tickSize.left.height;
+      this.axisStyle.left.tickSize.height;
 
     this.size.height =
       canvas.height -
       this.padding.bottom -
       this.padding.top -
-      this.tickSize.bottom.height -
-      this.tickSize.top.height -
+      this.axisStyle.bottom.tickSize.height -
+      this.axisStyle.top.tickSize.height -
       this.padding.left * 2 -
-      this.tickSize.left.height;
+      this.axisStyle.left.tickSize.height;
   };
 
   public setStartPoint = () => {
-    this.startPoint.bottom.x = this.padding.left * 2 + this.tickSize.left.height;
+    this.startPoint.bottom.x = this.padding.left * 2 + this.axisStyle.left.tickSize.height;
     this.startPoint.bottom.y = this.padding.left * 2 + this.size.height;
     this.startPoint.left = {
       x: this.startPoint.bottom.x,

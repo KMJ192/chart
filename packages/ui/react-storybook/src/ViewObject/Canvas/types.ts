@@ -1,9 +1,9 @@
-import type CSS from 'csstype';
+import { Properties as CSSProperties } from 'csstype';
 
 interface CanvasLayerInfo {
   type: string;
   id: string;
-  style?: Omit<Omit<CSS.Properties, 'position'>, 'width'>;
+  style?: Omit<Omit<CSSProperties, 'position'>, 'width'>;
 }
 
 interface CanvasLayer extends Omit<CanvasLayerInfo, 'style'> {

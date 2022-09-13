@@ -7,7 +7,9 @@ interface Axis {
   min: number;
   unitsPerTick: number;
   tickColor: string;
-  output?: string[];
+  lineWidth: number;
+  lineColor: string;
+  output: string[];
 }
 
 interface Series {
@@ -49,10 +51,4 @@ type GraphDataParam = {
   }>;
 };
 
-type CalculatorParam = {
-  padding: RectArea<number>;
-  graphType: GraphType;
-  tickSize: RectArea<Size>;
-};
-
-export { GraphParam, GraphDataParam, GraphType, RenderOptions, CalculatorParam, Axis, Series };
+export { GraphParam, GraphDataParam, GraphType, RenderOptions, Axis, Series };

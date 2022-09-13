@@ -1,5 +1,6 @@
 import Canvas from '../Canvas';
 import Calculator from './Calculator';
+import Draw from './Draw';
 
 import type { CanvasLayerInfo } from '../Canvas/types';
 import type { GraphDataParam, GraphType, GraphParam, RenderOptions } from './types';
@@ -10,6 +11,8 @@ class Graph {
   private canvas: Canvas;
 
   private calculator: Calculator;
+
+  private drawObj: Draw;
 
   private canvasLayerInfo: CanvasLayerInfo[] = [
     {
@@ -50,10 +53,10 @@ class Graph {
     this.calculator = new Calculator({
       graphType,
       padding: {
-        top: padding?.top || 0,
-        bottom: padding?.bottom || 0,
-        left: padding?.left || 0,
-        right: padding?.right || 0,
+        top: padding?.top || 1,
+        bottom: padding?.bottom || 1,
+        left: padding?.left || 1,
+        right: padding?.right || 1,
       },
       tickSize: {
         top: {
@@ -74,11 +77,15 @@ class Graph {
         },
       },
     });
+
+    this.drawObj = new Draw({ calculator: this.calculator });
   }
 
   public render(data: GraphDataParam, renderOptions?: Partial<RenderOptions>) {
     // 1. canvas 노드 생성
     this.canvas.appendCanvasNode();
+
+    const canvasLayer = this.canvas.getCanvas;
 
     // 2. 그래프 렌더링 옵션 설정
     this.calculator.renderOptionSetter = {
@@ -95,7 +102,8 @@ class Graph {
     // 5. axis 데이터 별 range 설정
     this.calculator.setRange(data.axis);
 
-    this.calculator.setSize(this.canvas.getCanvas[0].canvas);
+    // 6. 크기 설정
+    this.calculator.setSize(canvasLayer[0].canvas);
 
     // 7. axis 별 시작점 설정
     this.calculator.setStartPoint();
@@ -103,9 +111,16 @@ class Graph {
     // 8. 그래프 내부 영역
     this.calculator.setArea();
 
+    // 9. 이거 머였더라
     this.calculator.setElementArea();
 
-    this.calculator.display();
+    // 10. axis 스타일 설정
+    this.calculator.setAxisStyle(data.axis);
+
+    // 11. axis 그리기
+    this.drawObj.drawAxis(canvasLayer[0]);
+
+    // this.calculator.display();
 
     return () => {
       // console.log('unmount');
