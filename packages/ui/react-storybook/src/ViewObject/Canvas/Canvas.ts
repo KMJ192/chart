@@ -1,4 +1,3 @@
-import { hash } from '@src/utils/utils';
 import type { CanvasParam, CanvasLayer, CanvasLayerInfo } from './types';
 
 class Canvas {
@@ -34,7 +33,7 @@ class Canvas {
     canvasLayerInfo.forEach((level: CanvasLayerInfo, idx) => {
       const { type, id, style } = level;
       const canvas = document.createElement('canvas') as HTMLCanvasElement;
-      canvas.id = `${id}-${hash(id)}`;
+      canvas.id = id;
       const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
       if (style !== undefined) {
@@ -148,7 +147,7 @@ class Canvas {
     }
   };
 
-  get getCanvas(): CanvasLayer[] {
+  get getCanvasLayer(): CanvasLayer[] {
     return this.canvasLayer;
   }
 

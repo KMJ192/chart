@@ -15,26 +15,6 @@ class Calculator {
     right: 1,
   };
 
-  // tick size
-  // private tickSize: RectArea<Size> = {
-  //   top: {
-  //     width: 1,
-  //     height: 3,
-  //   },
-  //   bottom: {
-  //     width: 1,
-  //     height: 3,
-  //   },
-  //   left: {
-  //     width: 1,
-  //     height: 3,
-  //   },
-  //   right: {
-  //     width: 1,
-  //     height: 3,
-  //   },
-  // };
-
   private axisStyle: RectArea<{
     lineWidth: number;
     lineColor: string;

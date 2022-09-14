@@ -85,7 +85,7 @@ class Graph {
     // 1. canvas 노드 생성
     this.canvas.appendCanvasNode();
 
-    const canvasLayer = this.canvas.getCanvas;
+    const canvasLayer = this.canvas.getCanvasLayer;
 
     // 2. 그래프 렌더링 옵션 설정
     this.calculator.renderOptionSetter = {
