@@ -9,10 +9,6 @@ class Canvas {
 
   private layerDictionary: { [key: string]: number };
 
-  private width: number;
-
-  private height: number;
-
   private isAppend: boolean;
 
   constructor({ nodeId, canvasLayerInfo, width, height }: CanvasParam) {
@@ -25,10 +21,6 @@ class Canvas {
     this.canvasLayer = [];
 
     this.layerDictionary = {};
-
-    this.width = width;
-
-    this.height = height;
 
     canvasLayerInfo.forEach((level: CanvasLayerInfo, idx) => {
       const { type, id, style } = level;
@@ -149,13 +141,6 @@ class Canvas {
 
   get getCanvasLayer(): CanvasLayer[] {
     return this.canvasLayer;
-  }
-
-  get size(): Size {
-    return {
-      width: this.width,
-      height: this.height,
-    };
   }
 }
 

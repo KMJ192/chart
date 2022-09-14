@@ -124,17 +124,6 @@ class Calculator {
     right: 0,
   };
 
-  private canvasArea: Bounds<Vector> = {
-    start: {
-      x: 0,
-      y: 0,
-    },
-    end: {
-      x: 0,
-      y: 0,
-    },
-  };
-
   /**
    * 기본 렌더링 옵션
    * left y축, botton x축 true,
@@ -568,8 +557,10 @@ class Calculator {
   };
 
   public setStartPoint = () => {
-    this.startPoint.bottom.x = this.padding.left * 2 + this.axisStyle.left.tickSize.height;
-    this.startPoint.bottom.y = this.padding.left * 2 + this.size.height;
+    this.startPoint.bottom = {
+      x: this.padding.left * 2 + this.axisStyle.left.tickSize.height,
+      y: this.padding.left * 2 + this.size.height,
+    };
     this.startPoint.left = {
       x: this.startPoint.bottom.x,
       y: this.startPoint.bottom.y,
