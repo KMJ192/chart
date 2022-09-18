@@ -20,16 +20,16 @@ interface Series {
   lineData?: number[];
   lineColor?: string;
   lineWidth?: number;
-  dependsXAxis?: 'bottom' | 'top';
+  // dependsXAxis?: 'bottom' | 'top';
 }
 
 type RenderOptions = {
-  axis: RectArea<boolean>;
+  axis: BowlArea<boolean>;
   series: {
     left: boolean;
     right: boolean;
   };
-  text: RectArea<boolean>;
+  text: BowlArea<boolean>;
   legend: boolean;
   tooltip: boolean;
 };
@@ -40,11 +40,11 @@ type GraphParam = {
   width: number;
   height: number;
   padding: Partial<RectArea<number>>;
-  tickSize: Partial<RectArea<Size>>;
+  tickSize: Partial<BowlArea<Size>>;
 };
 
 type GraphDataParam = {
-  axis: Partial<RectArea<Partial<Axis>>>;
+  axis: Partial<BowlArea<Partial<Axis>>>;
   series: Partial<{
     left: Partial<Series>[];
     right: Partial<Series>[];

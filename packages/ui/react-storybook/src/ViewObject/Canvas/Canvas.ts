@@ -44,11 +44,12 @@ class Canvas {
         [type]: idx,
       };
 
-      // Correction anti aliasing
+      // anti aliasing
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       ctx.scale(dpr, dpr);
 
+      this.canvasContainer.style.position = 'relative';
       this.canvasContainer.appendChild(canvas);
 
       this.canvasLayer[idx] = {
@@ -123,14 +124,6 @@ class Canvas {
 
     ctx.restore();
   };
-
-  // public drawRect = () => {};
-
-  // public drawText = () => {};
-
-  // public clearArea = () => {};
-
-  // public clearCanvas () => {};
 
   public appendCanvasNode = () => {
     if (!this.isAppend) {
