@@ -53,27 +53,23 @@ class Graph {
     this.calculator = new Calculator({
       graphType,
       padding: {
-        top: padding?.top || 1,
-        bottom: padding?.bottom || 1,
-        left: padding?.left || 1,
-        right: padding?.right || 1,
+        top: padding?.top || 10,
+        bottom: padding?.bottom || 10,
+        left: padding?.left || 10,
+        right: padding?.right || 10,
       },
       tickSize: {
-        top: {
-          width: tickSize?.top?.width || 1,
-          height: tickSize?.top?.height || 3,
-        },
         bottom: {
-          width: tickSize?.top?.width || 1,
-          height: tickSize?.top?.height || 3,
+          width: tickSize?.bottom?.width || 1,
+          height: tickSize?.bottom?.height || 7,
         },
         left: {
-          width: tickSize?.top?.width || 1,
-          height: tickSize?.top?.height || 3,
+          width: tickSize?.left?.width || 1,
+          height: tickSize?.left?.height || 7,
         },
         right: {
-          width: tickSize?.top?.width || 1,
-          height: tickSize?.top?.height || 3,
+          width: tickSize?.right?.width || 1,
+          height: tickSize?.right?.height || 7,
         },
       },
     });
@@ -119,6 +115,8 @@ class Graph {
 
     // 11. axis 그리기
     this.drawObj.drawAxis(canvasLayer[0]);
+
+    this.drawObj.drawAxisInfo(canvasLayer[0]);
 
     // this.calculator.display();
 

@@ -53,3 +53,5 @@ declare interface RectArea<T> {
   left: T;
   right: T;
 }
+
+declare type BowlArea<T> = Omit<RectArea<T>, 'top'>;
