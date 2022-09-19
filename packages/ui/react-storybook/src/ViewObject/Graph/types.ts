@@ -29,7 +29,8 @@ type RenderOptions = {
     left: boolean;
     right: boolean;
   };
-  text: BowlArea<boolean>;
+  tick: BowlArea<boolean>;
+  axisInfo: BowlArea<boolean>;
   legend: boolean;
   tooltip: boolean;
 };
