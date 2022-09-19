@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash';
 
 import type { CalculatorParam } from './types';
-import type { Axis, GraphDataParam, GraphType, Series } from '../types';
+import type { Axis, GraphDataParam, GraphType, RenderOptions, Series } from '../types';
 
 // 데이터 연산
 class Calculator {
@@ -14,6 +14,8 @@ class Calculator {
     lineWidth: number;
     lineColor: string;
     tickSize: Size;
+    font: string;
+    fontColor: string;
   }> = {
     bottom: {
       lineWidth: 1,
@@ -22,6 +24,8 @@ class Calculator {
         width: 1,
         height: 3,
       },
+      font: '10px sans-serif',
+      fontColor: '#000',
     },
     left: {
       lineWidth: 1,
@@ -30,6 +34,8 @@ class Calculator {
         width: 1,
         height: 3,
       },
+      font: '10px sans-serif',
+      fontColor: '#000',
     },
     right: {
       lineWidth: 1,
@@ -38,6 +44,8 @@ class Calculator {
         width: 1,
         height: 3,
       },
+      font: '10px sans-serif',
+      fontColor: '#000',
     },
   };
 
@@ -109,13 +117,7 @@ class Calculator {
    * left y축, botton x축 true,
    * right y축 optional
    */
-  private renderOption: {
-    series: {
-      left: boolean;
-      right: boolean;
-    };
-    axis: BowlArea<boolean>;
-  } = {
+  private renderOption: RenderOptions = {
     series: {
       left: true,
       right: false,
@@ -125,6 +127,18 @@ class Calculator {
       left: true,
       right: false,
     },
+    tick: {
+      bottom: true,
+      left: true,
+      right: false,
+    },
+    axisInfo: {
+      bottom: true,
+      left: true,
+      right: false,
+    },
+    legend: true,
+    tooltip: true,
   };
 
   constructor({ padding, graphType, tickSize }: CalculatorParam) {
@@ -141,15 +155,7 @@ class Calculator {
     this.axisStyle.right.tickSize = tickSize.right;
   }
 
-  set renderOptionSetter(
-    renderOption: Partial<{
-      series: {
-        left?: boolean;
-        right?: boolean;
-      };
-      axis: Partial<BowlArea<boolean>>;
-    }>,
-  ) {
+  set renderOptionSetter(renderOption: Partial<RenderOptions>) {
     if (typeof renderOption.axis?.bottom === 'boolean') {
       this.renderOption.axis.bottom = renderOption.axis.bottom;
     }
@@ -169,6 +175,38 @@ class Calculator {
     if (typeof renderOption.series?.right === 'boolean') {
       this.renderOption.series.right = renderOption.series.right;
     }
+
+    if (typeof renderOption.tick?.bottom === 'boolean') {
+      this.renderOption.tick.bottom = renderOption.tick.bottom;
+    }
+
+    if (typeof renderOption.tick?.left === 'boolean') {
+      this.renderOption.tick.left = renderOption.tick.left;
+    }
+
+    if (typeof renderOption.tick?.right === 'boolean') {
+      this.renderOption.tick.right = renderOption.tick.right;
+    }
+
+    if (typeof renderOption.axisInfo?.bottom === 'boolean') {
+      this.renderOption.axisInfo.bottom = renderOption.axisInfo.bottom;
+    }
+
+    if (typeof renderOption.axisInfo?.left === 'boolean') {
+      this.renderOption.axisInfo.left = renderOption.axisInfo.left;
+    }
+
+    if (typeof renderOption.axisInfo?.right === 'boolean') {
+      this.renderOption.axisInfo.right = renderOption.axisInfo.right;
+    }
+
+    if (typeof renderOption.legend === 'boolean') {
+      this.renderOption.legend = renderOption.legend;
+    }
+
+    if (typeof renderOption.tooltip === 'boolean') {
+      this.renderOption.tooltip = renderOption.tooltip;
+    }
   }
 
   get renderOptionGetter(): {
@@ -185,6 +223,8 @@ class Calculator {
     lineWidth: number;
     lineColor: string;
     tickSize: Size;
+    font: string;
+    fontColor: string;
   }> {
     return this.axisStyle;
   }
@@ -202,6 +242,14 @@ class Calculator {
 
   get rangeGetter(): BowlArea<number> {
     return this.range;
+  }
+
+  get elementAreaGetter(): BowlArea<number> {
+    return this.elementArea;
+  }
+
+  get startPointerGetter(): BowlArea<Vector> {
+    return this.startPoint;
   }
 
   public validationCheck = (data: GraphDataParam) => {
