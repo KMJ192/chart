@@ -24,8 +24,9 @@ const axis: BowlArea<Partial<Axis>> = {
     name: 'x-bottom',
     max: 10,
     min: 0,
-    unitsPerTick: 1,
+    unitsPerTick: 4,
     tickColor: '#000',
+    output: [],
   },
   left: {
     name: 'y-left',

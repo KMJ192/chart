@@ -24,7 +24,7 @@ class Calculator {
         width: 1,
         height: 3,
       },
-      font: '10px sans-serif',
+      font: '14px sans-serif',
       fontColor: '#000',
     },
     left: {
@@ -34,7 +34,7 @@ class Calculator {
         width: 1,
         height: 3,
       },
-      font: '10px sans-serif',
+      font: '14px sans-serif',
       fontColor: '#000',
     },
     right: {
@@ -44,7 +44,7 @@ class Calculator {
         width: 1,
         height: 3,
       },
-      font: '10px sans-serif',
+      font: '14px sans-serif',
       fontColor: '#000',
     },
   };
@@ -250,6 +250,23 @@ class Calculator {
 
   get startPointerGetter(): BowlArea<Vector> {
     return this.startPoint;
+  }
+
+  get minMaxGetter(): BowlArea<{ max: number; min: number }> {
+    return {
+      bottom: {
+        max: this.max.bottom,
+        min: this.min.bottom,
+      },
+      left: {
+        max: this.max.left,
+        min: this.min.left,
+      },
+      right: {
+        max: this.max.right,
+        min: this.min.right,
+      },
+    };
   }
 
   public validationCheck = (data: GraphDataParam) => {
@@ -481,7 +498,6 @@ class Calculator {
     this.range.left = this.max.left - this.min.left;
     this.range.right = this.max.right - this.min.right;
 
-    // range가 나누어 떨어지지 않을 경우 => 추후 테스트
     const leftUnitPerTick = axis.left?.unitsPerTick || 1;
     const leftMod = this.range.left % leftUnitPerTick;
     if (leftMod !== 0) {
