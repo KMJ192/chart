@@ -1,7 +1,7 @@
 // Graph Types
 type GraphType = 'line' | 'bar' | 'line+bar';
 
-interface Axis {
+type Axis = {
   name: string;
   max: number;
   min: number;
@@ -10,9 +10,9 @@ interface Axis {
   lineWidth: number;
   lineColor: string;
   output: string[];
-}
+};
 
-interface Series {
+type Series = {
   name: string;
   barData?: number[] | number[][];
   barColor?: string[];
@@ -20,17 +20,26 @@ interface Series {
   lineData?: number[];
   lineColor?: string;
   lineWidth?: number;
-  // dependsXAxis?: 'bottom' | 'top';
-}
+};
 
 type RenderOptions = {
   axis: BowlArea<boolean>;
+  axisInfo: BowlArea<{
+    outputText: boolean;
+    tick: boolean;
+  }>;
   series: {
     left: boolean;
     right: boolean;
   };
-  tick: BowlArea<boolean>;
-  axisInfo: BowlArea<boolean>;
+  seriesInfo: {
+    left: {
+      outputText: boolean;
+    };
+    right: {
+      outputText: boolean;
+    };
+  };
   legend: boolean;
   tooltip: boolean;
 };

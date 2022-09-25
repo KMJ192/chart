@@ -122,20 +122,32 @@ class Calculator {
       left: true,
       right: false,
     },
+    seriesInfo: {
+      left: {
+        outputText: true,
+      },
+      right: {
+        outputText: true,
+      },
+    },
     axis: {
       bottom: true,
       left: true,
       right: false,
     },
-    tick: {
-      bottom: true,
-      left: true,
-      right: false,
-    },
     axisInfo: {
-      bottom: true,
-      left: true,
-      right: false,
+      bottom: {
+        outputText: true,
+        tick: true,
+      },
+      left: {
+        outputText: true,
+        tick: true,
+      },
+      right: {
+        outputText: false,
+        tick: false,
+      },
     },
     legend: true,
     tooltip: true,
@@ -156,6 +168,7 @@ class Calculator {
   }
 
   set renderOptionSetter(renderOption: Partial<RenderOptions>) {
+    // 1. axis 렌더링 여부
     if (typeof renderOption.axis?.bottom === 'boolean') {
       this.renderOption.axis.bottom = renderOption.axis.bottom;
     }
@@ -168,6 +181,34 @@ class Calculator {
       this.renderOption.axis.right = renderOption.axis.right;
     }
 
+    // 2. axis info 렌더링 여부
+    // 2-1. outputText
+    if (typeof renderOption.axisInfo?.bottom.outputText === 'boolean') {
+      this.renderOption.axisInfo.bottom.outputText = renderOption.axisInfo.bottom.outputText;
+    }
+
+    if (typeof renderOption.axisInfo?.left.outputText === 'boolean') {
+      this.renderOption.axisInfo.left.outputText = renderOption.axisInfo.left.outputText;
+    }
+
+    if (typeof renderOption.axisInfo?.right.outputText === 'boolean') {
+      this.renderOption.axisInfo.right.outputText = renderOption.axisInfo.right.outputText;
+    }
+
+    // 2-2. tick
+    if (typeof renderOption.axisInfo?.bottom.tick === 'boolean') {
+      this.renderOption.axisInfo.bottom.tick = renderOption.axisInfo.bottom.tick;
+    }
+
+    if (typeof renderOption.axisInfo?.left.tick === 'boolean') {
+      this.renderOption.axisInfo.left.tick = renderOption.axisInfo.left.tick;
+    }
+
+    if (typeof renderOption.axisInfo?.right.tick === 'boolean') {
+      this.renderOption.axisInfo.right.tick = renderOption.axisInfo.right.tick;
+    }
+
+    // 3. series 렌더링 여부
     if (typeof renderOption.series?.left === 'boolean') {
       this.renderOption.series.left = renderOption.series.left;
     }
@@ -176,34 +217,21 @@ class Calculator {
       this.renderOption.series.right = renderOption.series.right;
     }
 
-    if (typeof renderOption.tick?.bottom === 'boolean') {
-      this.renderOption.tick.bottom = renderOption.tick.bottom;
+    // 4. series text 렌더링 여부
+    if (typeof renderOption.seriesInfo?.left.outputText === 'boolean') {
+      this.renderOption.seriesInfo.left.outputText = renderOption.seriesInfo.left.outputText;
     }
 
-    if (typeof renderOption.tick?.left === 'boolean') {
-      this.renderOption.tick.left = renderOption.tick.left;
+    if (typeof renderOption.seriesInfo?.right.outputText === 'boolean') {
+      this.renderOption.seriesInfo.right.outputText = renderOption.seriesInfo.right.outputText;
     }
 
-    if (typeof renderOption.tick?.right === 'boolean') {
-      this.renderOption.tick.right = renderOption.tick.right;
-    }
-
-    if (typeof renderOption.axisInfo?.bottom === 'boolean') {
-      this.renderOption.axisInfo.bottom = renderOption.axisInfo.bottom;
-    }
-
-    if (typeof renderOption.axisInfo?.left === 'boolean') {
-      this.renderOption.axisInfo.left = renderOption.axisInfo.left;
-    }
-
-    if (typeof renderOption.axisInfo?.right === 'boolean') {
-      this.renderOption.axisInfo.right = renderOption.axisInfo.right;
-    }
-
+    // 5. legend 렌더링 여부
     if (typeof renderOption.legend === 'boolean') {
       this.renderOption.legend = renderOption.legend;
     }
 
+    // 6. tooltip 렌더링 여부
     if (typeof renderOption.tooltip === 'boolean') {
       this.renderOption.tooltip = renderOption.tooltip;
     }
@@ -215,6 +243,10 @@ class Calculator {
       right: boolean;
     };
     axis: BowlArea<boolean>;
+    axisInfo: BowlArea<{
+      outputText: boolean;
+      tick: boolean;
+    }>;
   } {
     return this.renderOption;
   }
@@ -289,7 +321,53 @@ class Calculator {
       console.warn(`No right axis info. (But setted render option true)`);
     }
 
-    // 6. optional data의 입력 data 유무에 따른 render option 조정
+    // 6. axis info에 대한 설정
+    // 6-1. x축
+    if (!this.renderOption.axis.bottom) {
+      if (this.renderOption.axisInfo.bottom.outputText) {
+        this.renderOption.axisInfo.bottom.outputText = false;
+        // eslint-disable-next-line no-console
+        console.warn(`x축 렌더링 여부가 false 이므로 outputText를 그리지 않습니다`);
+      }
+      if (this.renderOption.axisInfo.bottom.tick) {
+        this.renderOption.axisInfo.bottom.tick = false;
+        // eslint-disable-next-line no-console
+        console.warn(`x축 렌더링 여부가 false 이므로 tick을 그리지 않습니다`);
+      }
+    }
+
+    // 6-2. left y축
+    if (!this.renderOption.axis.left) {
+      if (this.renderOption.axisInfo.left.outputText) {
+        this.renderOption.axisInfo.left.outputText = false;
+        // eslint-disable-next-line no-console
+        console.warn(`left y축 렌더링 여부가 false 이므로 outputText를 그리지 않습니다`);
+      }
+      if (this.renderOption.axisInfo.left.tick) {
+        this.renderOption.axisInfo.left.tick = false;
+        // eslint-disable-next-line no-console
+        console.warn(`left y축 렌더링 여부가 false 이므로 tick을 그리지 않습니다`);
+      }
+    }
+
+    // 6-3. right y축
+    if (!this.renderOption.axis.right) {
+      if (this.renderOption.axisInfo.right.outputText) {
+        this.renderOption.axisInfo.right.outputText = false;
+        // eslint-disable-next-line no-console
+        console.warn(`right y축 렌더링 여부가 false 이므로 outputText를 그리지 않습니다`);
+      }
+      if (this.renderOption.axisInfo.right.tick) {
+        this.renderOption.axisInfo.right.tick = false;
+        // eslint-disable-next-line no-console
+        console.warn(`right y축 렌더링 여부가 false 이므로 tick을 그리지 않습니다`);
+      }
+    } else {
+      this.renderOption.axisInfo.right.outputText = true;
+      this.renderOption.axisInfo.right.tick = true;
+    }
+
+    // 7. optional data의 입력 data 유무에 따른 render option 조정
     if (data.axis.right) {
       this.renderOption.axis.right = true;
       this.renderOption.series.right = true;

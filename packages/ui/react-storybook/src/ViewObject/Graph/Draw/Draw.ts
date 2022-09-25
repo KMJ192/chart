@@ -12,6 +12,7 @@ class Draw {
     this.calculator = calculator;
   }
 
+  // Draw axis
   public drawAxis = (layer: CanvasLayer) => {
     const renderOption = this.calculator.renderOptionGetter;
     if (!renderOption.axis.bottom && !renderOption.axis.left && !renderOption.axis.right) {
@@ -75,6 +76,7 @@ class Draw {
     ctx.restore();
   };
 
+  // Draw axis information
   public drawAxisInfo = (layer: CanvasLayer, axis: Partial<BowlArea<Partial<Axis>>>) => {
     const renderOption = this.calculator.renderOptionGetter;
     if (!renderOption.axis.bottom && !renderOption.axis.left && !renderOption.axis.right) {
@@ -88,6 +90,7 @@ class Draw {
     const minMax = this.calculator.minMaxGetter;
     ctx.save();
 
+    // 1. Draw bottom x
     if (renderOption.axis.bottom) {
       const {
         tickSize: { height: tickHeight, width: tickWidht },
@@ -105,26 +108,29 @@ class Draw {
 
       for (let i = 0; i <= range.bottom; i += unitsPerTick) {
         const xPoint = crispPixel(i * elementArea.bottom + startPoint.bottom.x, tickWidht);
-        // const xPoint = i * elementArea.bottom + startPoint.bottom.x;
         const yPoint = startPoint.bottom.y;
 
         ctx.beginPath();
 
-        ctx.moveTo(xPoint, yPoint);
-        ctx.lineTo(xPoint, yPoint + tickHeight);
-        ctx.stroke();
-
-        let value = '';
-        if (axis.bottom?.output && axis.bottom.output[i] !== undefined) {
-          value = axis.bottom.output[i];
-        } else {
-          value = String(i);
+        if (renderOption.axisInfo.bottom.tick) {
+          ctx.moveTo(xPoint, yPoint);
+          ctx.lineTo(xPoint, yPoint + tickHeight);
+          ctx.stroke();
         }
-        const metrics = ctx.measureText(value);
-        const { width: fontWidth } = metrics;
-        const fontHeight = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
 
-        ctx.fillText(value, xPoint - fontWidth / 2, yPoint + tickHeight + fontHeight);
+        if (renderOption.axisInfo.bottom.outputText) {
+          let value = '';
+          if (axis.bottom?.output && axis.bottom.output[i] !== undefined) {
+            value = axis.bottom.output[i];
+          } else {
+            value = String(i);
+          }
+          const metrics = ctx.measureText(value);
+          const { width: fontWidth } = metrics;
+          const fontHeight = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
+
+          ctx.fillText(value, xPoint - fontWidth / 2, yPoint + tickHeight + fontHeight);
+        }
 
         ctx.closePath();
       }
@@ -135,26 +141,32 @@ class Draw {
         const yPoint = startPoint.bottom.y;
 
         ctx.beginPath();
-        ctx.moveTo(xPoint, yPoint);
-        ctx.lineTo(xPoint, yPoint + tickHeight);
-        ctx.stroke();
 
-        let value = '';
-        if (axis.bottom?.output && axis.bottom.output[range.bottom + 1] !== undefined) {
-          value = axis.bottom.output[range.bottom + 1];
-        } else {
-          value = String(minMax.bottom.max);
+        if (renderOption.axisInfo.bottom.tick) {
+          ctx.moveTo(xPoint, yPoint);
+          ctx.lineTo(xPoint, yPoint + tickHeight);
+          ctx.stroke();
         }
-        const metrics = ctx.measureText(value);
-        const { width: fontWidth } = metrics;
-        const fontHeight = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
 
-        ctx.fillText(value, xPoint - fontWidth / 2, yPoint + tickHeight + fontHeight);
+        if (renderOption.axisInfo.bottom.outputText) {
+          let value = '';
+          if (axis.bottom?.output && axis.bottom.output[range.bottom + 1] !== undefined) {
+            value = axis.bottom.output[range.bottom + 1];
+          } else {
+            value = String(minMax.bottom.max);
+          }
+          const metrics = ctx.measureText(value);
+          const { width: fontWidth } = metrics;
+          const fontHeight = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
+
+          ctx.fillText(value, xPoint - fontWidth / 2, yPoint + tickHeight + fontHeight);
+        }
 
         ctx.closePath();
       }
     }
 
+    // 2. Draw left y
     if (renderOption.axis.left) {
       const {
         tickSize: { height: tickHeight, width: tickWidht },
@@ -176,26 +188,31 @@ class Draw {
 
         ctx.beginPath();
 
-        ctx.moveTo(xPoint, yPoint);
-        ctx.lineTo(xPoint - tickHeight, yPoint);
-        ctx.stroke();
-
-        let value = '';
-        if (axis.left?.output && axis.left.output[i] !== undefined) {
-          value = axis.left.output[i];
-        } else {
-          value = String(i);
+        if (renderOption.axisInfo.left.tick) {
+          ctx.moveTo(xPoint, yPoint);
+          ctx.lineTo(xPoint - tickHeight, yPoint);
+          ctx.stroke();
         }
-        const metrics = ctx.measureText(value);
-        const { width: fontWidth } = metrics;
-        const fontHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
 
-        ctx.fillText(value, xPoint - tickHeight - fontWidth - 4, yPoint + fontHeight / 2);
+        if (renderOption.axisInfo.left.outputText) {
+          let value = '';
+          if (axis.left?.output && axis.left.output[i] !== undefined) {
+            value = axis.left.output[i];
+          } else {
+            value = String(i);
+          }
+          const metrics = ctx.measureText(value);
+          const { width: fontWidth } = metrics;
+          const fontHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+
+          ctx.fillText(value, xPoint - tickHeight - fontWidth - 4, yPoint + fontHeight / 2);
+        }
 
         ctx.closePath();
       }
     }
 
+    // 3. Draw right y
     if (renderOption.axis.right) {
       const {
         tickSize: { height: tickHeight, width: tickWidht },
@@ -217,20 +234,24 @@ class Draw {
 
         ctx.beginPath();
 
-        ctx.moveTo(xPoint, yPoint);
-        ctx.lineTo(xPoint + tickHeight, yPoint);
-        ctx.stroke();
-
-        let value = '';
-        if (axis.right?.output && axis.right.output[i] !== undefined) {
-          value = axis.right.output[i];
-        } else {
-          value = String(i);
+        if (renderOption.axisInfo.right.tick) {
+          ctx.moveTo(xPoint, yPoint);
+          ctx.lineTo(xPoint + tickHeight, yPoint);
+          ctx.stroke();
         }
-        const metrics = ctx.measureText(value);
-        const fontHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
 
-        ctx.fillText(value, xPoint + tickHeight + 4, yPoint + fontHeight / 2);
+        if (renderOption.axisInfo.right.outputText) {
+          let value = '';
+          if (axis.right?.output && axis.right.output[i] !== undefined) {
+            value = axis.right.output[i];
+          } else {
+            value = String(i);
+          }
+          const metrics = ctx.measureText(value);
+          const fontHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+
+          ctx.fillText(value, xPoint + tickHeight + 4, yPoint + fontHeight / 2);
+        }
 
         ctx.closePath();
       }
