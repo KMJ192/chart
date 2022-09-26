@@ -429,7 +429,7 @@ class Calculator {
     ) {
       const tmp = cloneDeep(isSet);
       // 2-1. left axis 참조 -> left y축 및 종속 x축(top or bottom)의 max, min
-      if (!isSet.left.max || !isSet.left.min || !isSet.bottom.max /* || !isSet.top.max */) {
+      if (!isSet.left.max || !isSet.left.min || !isSet.bottom.max) {
         series.left?.forEach((s: Partial<Series>) => {
           const isLineData = Array.isArray(s.lineData);
           const isBarData = Array.isArray(s.barData);
@@ -484,7 +484,7 @@ class Calculator {
       }
 
       // 2-2. right axis 참조 -> right y축 및 종속 x축(top or bottom)의 max, min
-      if (!isSet.right.max || !isSet.right.min || !isSet.bottom.max /* || !isSet.top.max */) {
+      if (!isSet.right.max || !isSet.right.min || !isSet.bottom.max) {
         series.right?.forEach((s: Partial<Series>) => {
           const isLineData = Array.isArray(s.lineData);
           const isBarData = Array.isArray(s.barData);
@@ -592,7 +592,7 @@ class Calculator {
       this.axisStyle.right.tickSize.height;
 
     this.size.height =
-      canvas.height / dpr -
+      canvas.height / dpr / dpr -
       this.padding.bottom -
       this.padding.top -
       this.axisStyle.bottom.tickSize.height;
