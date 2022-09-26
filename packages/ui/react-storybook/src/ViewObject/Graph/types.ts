@@ -40,6 +40,11 @@ type RenderOptions = {
       outputText: boolean;
     };
   };
+  verticalGuideLine: boolean;
+  horizontalGuideLine: {
+    left: boolean;
+    right: boolean;
+  };
   legend: boolean;
   tooltip: boolean;
 };
@@ -51,6 +56,7 @@ type GraphParam = {
   height: number;
   padding: Partial<RectArea<number>>;
   tickSize: Partial<BowlArea<Size>>;
+  tickPosition: Partial<BowlArea<'in' | 'out' | 'middle'>>;
 };
 
 type GraphDataParam = {
@@ -61,4 +67,16 @@ type GraphDataParam = {
   }>;
 };
 
-export { GraphParam, GraphDataParam, GraphType, RenderOptions, Axis, Series };
+interface RenderOptionsSetterParam extends RenderOptions {
+  data: GraphDataParam;
+}
+
+export {
+  GraphParam,
+  GraphDataParam,
+  GraphType,
+  RenderOptions,
+  RenderOptionsSetterParam,
+  Axis,
+  Series,
+};

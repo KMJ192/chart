@@ -19,12 +19,12 @@ type Props = {
   type?: 'line';
 };
 
-const axis: BowlArea<Partial<Axis>> = {
+const axis: Partial<BowlArea<Partial<Axis>>> = {
   bottom: {
     name: 'x-bottom',
     max: 10,
     min: 0,
-    unitsPerTick: 4,
+    unitsPerTick: 1,
     tickColor: '#000',
     output: [],
   },
@@ -44,10 +44,10 @@ const axis: BowlArea<Partial<Axis>> = {
   },
 };
 
-const series: {
+const series: Partial<{
   left: Partial<Series>[];
   right: Partial<Series>[];
-} = {
+}> = {
   left: [
     {
       name: 'left1',

@@ -87,6 +87,7 @@ class Graph {
     this.calculator.renderOptionSetter = {
       series: renderOptions?.series,
       axis: renderOptions?.axis,
+      data,
     };
 
     // 3. 데이터 유효성 검사
