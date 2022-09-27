@@ -115,9 +115,8 @@ class Graph {
     this.calculator.setAxisStyle(data.axis);
 
     // 11. axis 그리기
-    this.drawObj.drawAxis(canvasLayer[0]);
-
     this.drawObj.drawAxisInfo(canvasLayer[0], data.axis);
+    this.drawObj.drawAxis(canvasLayer[0]);
 
     // this.calculator.display();
 

@@ -32,7 +32,6 @@ class Draw {
 
       const xPoint = x;
       const yPoint = crispPixel(y, lineWidth);
-      // const yPoint = y;
 
       ctx.strokeStyle = lineColor;
       ctx.lineWidth = lineWidth;
@@ -48,7 +47,6 @@ class Draw {
       const { x, y } = startPoint.left;
 
       const xPoint = crispPixel(x, lineWidth);
-      // const xPoint = x;
       const yPoint = y;
 
       ctx.strokeStyle = lineColor;
@@ -97,41 +95,33 @@ class Draw {
       const {
         tickSize: { height: tickHeight, width: tickWidht },
         tickPosition,
-        lineColor,
+        tickColor,
         font,
         fontColor,
         lineWidth,
+        guideLineColor,
       } = axisStyle.bottom;
 
       const unitsPerTick = axis.bottom?.unitsPerTick || 1;
+      const isLastModuler = range.bottom % unitsPerTick !== 0;
 
-      ctx.strokeStyle = lineColor;
       ctx.lineWidth = tickWidht;
       ctx.font = font;
       ctx.fillStyle = fontColor;
 
-      const yPoint = (() => {
-        if (tickPosition === 'in') {
-          return startPoint.bottom.y - tickHeight - lineWidth;
-        }
-        if (tickPosition === 'middle') {
-          return startPoint.bottom.y - tickHeight / 2;
-        }
-        if (tickPosition === 'out') {
-          return startPoint.bottom.y;
-        }
-        return startPoint.bottom.y;
-      })();
+      let yPoint = startPoint.bottom.y;
+      let tickOut = 0;
+      if (tickPosition === 'in') {
+        yPoint = startPoint.bottom.y - tickHeight - lineWidth;
+        tickOut = tickHeight + lineWidth;
+      }
+      if (tickPosition === 'middle') {
+        yPoint = startPoint.bottom.y - tickHeight / 2;
+        tickOut = tickHeight / 2;
+      }
+
       for (let i = 0; i <= range.bottom; i += unitsPerTick) {
         const xPoint = crispPixel(i * elementArea.bottom + startPoint.bottom.x, tickWidht);
-
-        ctx.beginPath();
-
-        if (renderOption.axisInfo.bottom.tick) {
-          ctx.moveTo(xPoint, yPoint);
-          ctx.lineTo(xPoint, yPoint + tickHeight);
-          ctx.stroke();
-        }
 
         if (renderOption.axisInfo.bottom.outputText) {
           let value = '';
@@ -148,15 +138,31 @@ class Draw {
         }
 
         if (renderOption.verticalGuideLine) {
-          ctx.moveTo(xPoint, yPoint);
-          ctx.lineTo(xPoint, yPoint - size.height);
-          ctx.stroke();
+          ctx.beginPath();
+          ctx.strokeStyle = guideLineColor;
+          if (!isLastModuler && i !== 0 && i !== range.bottom) {
+            ctx.moveTo(xPoint, yPoint);
+            ctx.lineTo(xPoint, yPoint - size.height + tickOut);
+            ctx.stroke();
+          } else if (i !== 0 && i !== range.bottom) {
+            ctx.moveTo(xPoint, yPoint);
+            ctx.lineTo(xPoint, yPoint - size.height + tickOut);
+            ctx.stroke();
+          }
+          ctx.closePath();
         }
 
-        ctx.closePath();
+        if (renderOption.axisInfo.bottom.tick) {
+          ctx.beginPath();
+          ctx.strokeStyle = tickColor;
+          ctx.moveTo(xPoint, yPoint);
+          ctx.lineTo(xPoint, yPoint + tickHeight);
+          ctx.stroke();
+          ctx.closePath();
+        }
       }
 
-      if (range.bottom % unitsPerTick !== 0) {
+      if (isLastModuler) {
         const xPoint =
           crispPixel(minMax.bottom.max * elementArea.bottom + startPoint.bottom.x, tickWidht) - 0.5;
         const yPos = (() => {
@@ -172,12 +178,13 @@ class Draw {
           return startPoint.bottom.y;
         })();
 
-        ctx.beginPath();
-
         if (renderOption.axisInfo.bottom.tick) {
+          ctx.beginPath();
+          ctx.strokeStyle = tickColor;
           ctx.moveTo(xPoint, yPos);
           ctx.lineTo(xPoint, yPos + tickHeight);
           ctx.stroke();
+          ctx.closePath();
         }
 
         if (renderOption.axisInfo.bottom.outputText) {
@@ -193,8 +200,6 @@ class Draw {
 
           ctx.fillText(value, xPoint - fontWidth / 2, yPos + tickHeight + fontHeight);
         }
-
-        ctx.closePath();
       }
     }
     // ==================== 1. Draw bottom x ====================
@@ -204,41 +209,32 @@ class Draw {
       const {
         tickSize: { height: tickHeight, width: tickWidht },
         tickPosition,
-        lineColor,
+        tickColor,
         lineWidth,
         font,
         fontColor,
+        guideLineColor,
       } = axisStyle.left;
 
       const unitsPerTick = axis.left?.unitsPerTick || 1;
 
-      ctx.strokeStyle = lineColor;
       ctx.lineWidth = tickWidht;
       ctx.font = font;
       ctx.fillStyle = fontColor;
 
-      const xPoint = (() => {
-        if (tickPosition === 'in') {
-          return startPoint.left.x + tickHeight + lineWidth;
-        }
-        if (tickPosition === 'middle') {
-          return startPoint.left.x + tickHeight / 2;
-        }
-        if (tickPosition === 'out') {
-          return startPoint.left.x;
-        }
-        return startPoint.left.x;
-      })();
+      let xPoint = startPoint.left.x;
+      let tickOut = 0;
+      if (tickPosition === 'in') {
+        xPoint = startPoint.left.x + tickHeight + lineWidth;
+        tickOut = tickHeight + lineWidth;
+      }
+      if (tickPosition === 'middle') {
+        xPoint = startPoint.left.x + tickHeight / 2;
+        tickOut = tickHeight / 2;
+      }
+
       for (let i = 0; i <= range.left; i += unitsPerTick) {
         const yPoint = crispPixel(startPoint.left.y - i * elementArea.left, tickWidht);
-
-        ctx.beginPath();
-
-        if (renderOption.axisInfo.left.tick) {
-          ctx.moveTo(xPoint, yPoint);
-          ctx.lineTo(xPoint - tickHeight, yPoint);
-          ctx.stroke();
-        }
 
         if (renderOption.axisInfo.left.outputText) {
           let value = '';
@@ -254,13 +250,23 @@ class Draw {
           ctx.fillText(value, xPoint - tickHeight - fontWidth - 4, yPoint + fontHeight / 2);
         }
 
-        if (renderOption.horizontalGuideLine.left) {
+        if (i !== 0 && renderOption.horizontalGuideLine.left) {
+          ctx.beginPath();
+          ctx.strokeStyle = guideLineColor;
           ctx.moveTo(xPoint, yPoint);
-          ctx.lineTo(xPoint + size.width, yPoint);
+          ctx.lineTo(xPoint + size.width - tickOut, yPoint);
           ctx.stroke();
+          ctx.closePath();
         }
 
-        ctx.closePath();
+        if (renderOption.axisInfo.left.tick) {
+          ctx.beginPath();
+          ctx.strokeStyle = tickColor;
+          ctx.moveTo(xPoint, yPoint);
+          ctx.lineTo(xPoint - tickHeight, yPoint);
+          ctx.stroke();
+          ctx.closePath();
+        }
       }
     }
     // ==================== 2. Draw left y ====================
@@ -270,42 +276,33 @@ class Draw {
       const {
         tickSize: { height: tickHeight, width: tickWidht },
         tickPosition,
-        lineColor,
+        tickColor,
         lineWidth,
         font,
         fontColor,
+        guideLineColor,
       } = axisStyle.right;
 
       const unitsPerTick = axis.right?.unitsPerTick || 1;
 
-      ctx.strokeStyle = lineColor;
+      ctx.strokeStyle = tickColor;
       ctx.lineWidth = tickWidht;
       ctx.font = font;
       ctx.fillStyle = fontColor;
 
-      const xPoint = (() => {
-        if (tickPosition === 'in') {
-          return startPoint.right.x - tickHeight - lineWidth;
-        }
-        if (tickPosition === 'middle') {
-          return startPoint.right.x - tickHeight / 2;
-        }
-        if (tickPosition === 'out') {
-          return startPoint.right.x;
-        }
-        return startPoint.right.x;
-      })();
+      let xPoint = startPoint.right.x;
+      let tickOut = 0;
+      if (tickPosition === 'in') {
+        xPoint = startPoint.right.x - tickHeight - lineWidth;
+        tickOut = tickHeight + lineWidth;
+      }
+      if (tickPosition === 'middle') {
+        xPoint = startPoint.right.x - tickHeight / 2;
+        tickOut = tickHeight / 2;
+      }
 
       for (let i = 0; i <= range.right; i += unitsPerTick) {
         const yPoint = crispPixel(startPoint.right.y - i * elementArea.right, tickWidht);
-
-        ctx.beginPath();
-
-        if (renderOption.axisInfo.right.tick) {
-          ctx.moveTo(xPoint, yPoint);
-          ctx.lineTo(xPoint + tickHeight, yPoint);
-          ctx.stroke();
-        }
 
         if (renderOption.axisInfo.right.outputText) {
           let value = '';
@@ -320,13 +317,23 @@ class Draw {
           ctx.fillText(value, xPoint + tickHeight + 4, yPoint + fontHeight / 2);
         }
 
-        if (renderOption.horizontalGuideLine.right) {
+        if (i !== 0 && renderOption.horizontalGuideLine.right) {
+          ctx.beginPath();
+          ctx.strokeStyle = guideLineColor;
           ctx.moveTo(xPoint, yPoint);
-          ctx.lineTo(xPoint - size.width, yPoint);
+          ctx.lineTo(xPoint - size.width + tickOut, yPoint);
           ctx.stroke();
+          ctx.closePath();
         }
 
-        ctx.closePath();
+        if (renderOption.axisInfo.right.tick) {
+          ctx.beginPath();
+          ctx.strokeStyle = tickColor;
+          ctx.moveTo(xPoint, yPoint);
+          ctx.lineTo(xPoint + tickHeight, yPoint);
+          ctx.stroke();
+          ctx.closePath();
+        }
       }
     }
     // ==================== 3. Draw right y ====================

@@ -22,8 +22,10 @@ class Calculator {
     lineColor: string;
     tickSize: Size;
     tickPosition: 'in' | 'out' | 'middle';
+    tickColor: string;
     font: string;
     fontColor: string;
+    guideLineColor: string;
   }> = {
     bottom: {
       lineWidth: 1,
@@ -32,9 +34,11 @@ class Calculator {
         width: 1,
         height: 3,
       },
+      tickColor: '#000',
       tickPosition: 'out',
       font: '14px sans-serif',
       fontColor: '#000',
+      guideLineColor: '#E2E2E2',
     },
     left: {
       lineWidth: 1,
@@ -43,9 +47,11 @@ class Calculator {
         width: 1,
         height: 3,
       },
+      tickColor: '#000',
       tickPosition: 'out',
       font: '14px sans-serif',
       fontColor: '#000',
+      guideLineColor: '#E2E2E2',
     },
     right: {
       lineWidth: 1,
@@ -54,9 +60,11 @@ class Calculator {
         width: 1,
         height: 3,
       },
+      tickColor: '#000',
       tickPosition: 'out',
       font: '14px sans-serif',
       fontColor: '#000',
+      guideLineColor: '#E2E2E2',
     },
   };
 
@@ -303,9 +311,11 @@ class Calculator {
     lineWidth: number;
     lineColor: string;
     tickSize: Size;
+    tickColor: string;
     tickPosition: 'in' | 'out' | 'middle';
     font: string;
     fontColor: string;
+    guideLineColor: string;
   }> {
     return this.axisStyle;
   }
@@ -592,7 +602,7 @@ class Calculator {
       this.axisStyle.right.tickSize.height;
 
     this.size.height =
-      canvas.height / dpr / dpr -
+      canvas.height / dpr -
       this.padding.bottom -
       this.padding.top -
       this.axisStyle.bottom.tickSize.height;

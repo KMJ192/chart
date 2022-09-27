@@ -9,6 +9,7 @@ type Axis = {
   tickColor: string;
   lineWidth: number;
   lineColor: string;
+  guideLineColor: string;
   output: string[];
 };
 
