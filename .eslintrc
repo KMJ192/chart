@@ -54,7 +54,8 @@
     "react/no-array-index-key": 0,
     "no-alert": 1,
     "no-console": 1,
-    "no-lonely-if": 0
+    "no-lonely-if": 0,
+    "no-plusplus": 0
   },
   "ignorePatterns": ["declaration.ts"],
   "overrides": [

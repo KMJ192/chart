@@ -10,17 +10,18 @@ type Axis = {
   lineWidth: number;
   lineColor: string;
   guideLineColor: string;
-  output: string[];
+  output: Array<string>;
 };
 
 type Series = {
   name: string;
-  barData?: number[] | number[][];
-  barColor?: string[];
+  barData?: Array<number> | Array<Array<number>>;
+  lineData?: Array<number>;
+  barColor?: Array<string> | Array<Array<string>>;
   barWidth?: number;
-  lineData?: number[];
   lineColor?: string;
   lineWidth?: number;
+  pointRadius?: number;
 };
 
 type RenderOptions = {
@@ -63,8 +64,8 @@ type GraphParam = {
 type GraphDataParam = {
   axis: Partial<BowlArea<Partial<Axis>>>;
   series: Partial<{
-    left: Partial<Series>[];
-    right: Partial<Series>[];
+    left: Array<Partial<Series>>;
+    right: Array<Partial<Series>>;
   }>;
 };
 

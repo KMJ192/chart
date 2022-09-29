@@ -3,7 +3,7 @@ import Calculator from '../Calculator';
 import type { DrawParam } from './types';
 import type { CanvasLayer } from '@src/ViewObject/Canvas/types';
 import { crispPixel } from '@src/ViewObject/Canvas/utils';
-import { Axis } from '../types';
+import { Axis, Series } from '../types';
 
 class Draw {
   private calculator: Calculator;
@@ -337,6 +337,117 @@ class Draw {
       }
     }
     // ==================== 3. Draw right y ====================
+
+    ctx.restore();
+  };
+
+  public drawSeries = (
+    layer: CanvasLayer,
+    series: Partial<{
+      left: Array<Partial<Series>>;
+      right: Array<Partial<Series>>;
+    }>,
+    xAxisLineWidth: number,
+  ) => {
+    const { ctx } = layer;
+
+    const scale = this.calculator.scaleGetter;
+    const startPoint = this.calculator.startPointerGetter;
+    const size = this.calculator.sizeGetter;
+    const minMax = this.calculator.minMaxGetter;
+    const range = this.calculator.rangeGetter;
+    const area = this.calculator.areaGetter;
+
+    ctx.save();
+
+    if (Array.isArray(series.left)) {
+      const { left: yAxis } = series;
+      for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
+        const { name, pointRadius, lineColor, lineWidth, lineData, barData, barColor, barWidth } =
+          yAxis[idx1];
+        ctx.strokeStyle = lineColor || '#000';
+        ctx.lineWidth = lineWidth || 1;
+
+        let length = 0;
+        if (Array.isArray(lineData)) {
+          length = lineData.length;
+        }
+        if (Array.isArray(barData)) {
+          length = Math.max(length, barData.length);
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(startPoint.left.x, startPoint.left.y);
+        let nextPoint = {
+          line: {
+            x: 0,
+            y: 0,
+          },
+          bar: {
+            x: 0,
+            y: 0,
+          },
+        };
+        for (let idx2 = 0; idx2 < length; idx2++) {
+          if (lineData !== undefined && idx2 < lineData.length) {
+            const data = lineData[idx2];
+            const xPoint = idx2 * scale + startPoint.left.x;
+            const yPoint = Math.floor(
+              startPoint.left.y - ((data - minMax.left.min) * size.height) / range.left,
+            );
+            nextPoint = {
+              ...nextPoint,
+              line: {
+                x: xPoint,
+                y: yPoint,
+              },
+            };
+            if (idx2 > 0) {
+              ctx.lineTo(xPoint, yPoint);
+              ctx.stroke();
+            }
+            if (typeof pointRadius === 'number' && pointRadius > 0) {
+              ctx.beginPath();
+              ctx.arc(xPoint, yPoint, pointRadius, 0, 2 * Math.PI, false);
+              ctx.fill();
+              ctx.closePath();
+            }
+          }
+          if (barData !== undefined && idx2 < barData.length) {
+            ctx.moveTo(nextPoint.bar.x, nextPoint.bar.y);
+            const data = barData[idx2];
+            if (Array.isArray(data)) {
+              if (!Array.isArray(barColor)) {
+                throw Error('barColor 데이터 입력 타입은 Array<string>이 되어야 합니다.');
+              }
+              for (let i = 0; i < data.length; i++) {
+                const d = data[i];
+                const dc = barColor[i];
+              }
+            } else {
+              ctx.fillStyle = barColor ? String(barColor) : '#000';
+              const xPoint = idx2 * scale + startPoint.left.x;
+              const yPoint = range.left * idx2;
+              const bw = typeof barWidth === 'number' ? barWidth : 50;
+              if (idx2 === 0) {
+              } else if (idx2 === barData.length - 1) {
+              } else {
+                ctx.fillRect(xPoint - bw / 2, area.start.y, bw, -yPoint);
+              }
+              nextPoint = {
+                ...nextPoint,
+                bar: {
+                  x: xPoint,
+                  y: yPoint,
+                },
+              };
+            }
+          }
+          ctx.moveTo(nextPoint.line.x, nextPoint.line.y);
+        }
+        ctx.closePath();
+      }
+    }
 
     ctx.restore();
   };

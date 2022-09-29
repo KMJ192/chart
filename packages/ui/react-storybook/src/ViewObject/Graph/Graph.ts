@@ -118,6 +118,9 @@ class Graph {
     this.drawObj.drawAxisInfo(canvasLayer[0], data.axis);
     this.drawObj.drawAxis(canvasLayer[0]);
 
+    // 12. series 그리기
+    this.drawObj.drawSeries(canvasLayer[1], data.series, data.axis.bottom?.lineWidth || 1);
+
     // this.calculator.display();
 
     return () => {

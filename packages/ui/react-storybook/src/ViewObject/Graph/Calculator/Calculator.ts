@@ -288,6 +288,10 @@ class Calculator {
     }
   }
 
+  get scaleGetter() {
+    return this.scale;
+  }
+
   get renderOptionGetter(): {
     series: {
       left: boolean;
@@ -333,6 +337,10 @@ class Calculator {
 
   get rangeGetter(): BowlArea<number> {
     return this.range;
+  }
+
+  get areaGetter(): { start: Vector; end: Vector } {
+    return this.area;
   }
 
   get elementAreaGetter(): BowlArea<number> {
@@ -606,6 +614,11 @@ class Calculator {
       this.padding.bottom -
       this.padding.top -
       this.axisStyle.bottom.tickSize.height;
+
+    this.scale = this.size.width / this.range.bottom;
+    if (this.scale === Infinity) {
+      this.scale = 1;
+    }
   };
 
   public setStartPoint = () => {

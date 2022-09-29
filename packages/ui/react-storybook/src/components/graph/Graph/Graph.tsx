@@ -22,7 +22,7 @@ type Props = {
 const axis: Partial<BowlArea<Partial<Axis>>> = {
   bottom: {
     name: 'x-bottom',
-    max: 10,
+    max: 9,
     min: 0,
     unitsPerTick: 1,
     tickColor: '#000',
@@ -59,7 +59,8 @@ const series: Partial<{
       name: 'left2',
       lineColor: 'blue',
       lineWidth: 1,
-      lineData: [8, 2, 7, 1, 3, 1, 23, 11, 4, 3],
+      // lineData: [8, 2, 7, 1, 3, 1, 10, 8, 4, 3],
+      lineData: [4, 2, 7, 8, 4, 6, 3, 1, 3, 2],
       barData: [4, 2, 7, 8, 4, 6, 3, 1, 3, 2],
     },
   ],
