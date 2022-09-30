@@ -15,13 +15,13 @@ type Axis = {
 
 type Series = {
   name: string;
-  barData?: Array<number> | Array<Array<number>>;
-  lineData?: Array<number>;
-  barColor?: Array<string> | Array<Array<string>>;
-  barWidth?: number;
-  lineColor?: string;
-  lineWidth?: number;
-  pointRadius?: number;
+  lineColor: string;
+  lineWidth: number;
+  linePointRadius: number;
+  lineData: Array<number>;
+  barWidth: number;
+  barColor: Array<string> | Array<Array<string>>;
+  barData: Array<number> | Array<Array<number>>;
 };
 
 type RenderOptions = {

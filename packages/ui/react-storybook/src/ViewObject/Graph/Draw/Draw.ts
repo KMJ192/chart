@@ -120,13 +120,20 @@ class Draw {
         tickOut = tickHeight / 2;
       }
 
-      for (let i = 0; i <= range.bottom; i += unitsPerTick) {
+      const isOutputArr = axis.bottom?.output && Array.isArray(axis.bottom.output);
+      const step = isOutputArr ? 1 : unitsPerTick;
+      const dest = isOutputArr ? (axis.bottom?.output as Array<string>).length : range.bottom;
+      for (let i = 0; i <= dest; i += step) {
         const xPoint = crispPixel(i * elementArea.bottom + startPoint.bottom.x, tickWidht);
 
         if (renderOption.axisInfo.bottom.outputText) {
           let value = '';
-          if (axis.bottom?.output && axis.bottom.output[i] !== undefined) {
-            value = axis.bottom.output[i];
+          if (
+            axis.bottom?.output &&
+            Array.isArray(axis.bottom.output) &&
+            axis.bottom.output.length > i
+          ) {
+            value = axis.bottom.output[i] || '';
           } else {
             value = String(i);
           }
@@ -347,7 +354,6 @@ class Draw {
       left: Array<Partial<Series>>;
       right: Array<Partial<Series>>;
     }>,
-    xAxisLineWidth: number,
   ) => {
     const { ctx } = layer;
 
@@ -357,93 +363,83 @@ class Draw {
     const minMax = this.calculator.minMaxGetter;
     const range = this.calculator.rangeGetter;
     const area = this.calculator.areaGetter;
+    const elementArea = this.calculator.elementAreaGetter;
 
     ctx.save();
 
     if (Array.isArray(series.left)) {
       const { left: yAxis } = series;
       for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
-        const { name, pointRadius, lineColor, lineWidth, lineData, barData, barColor, barWidth } =
-          yAxis[idx1];
-        ctx.strokeStyle = lineColor || '#000';
-        ctx.lineWidth = lineWidth || 1;
+        const { name, barData, barColor, barWidth } = yAxis[idx1];
 
-        let length = 0;
-        if (Array.isArray(lineData)) {
-          length = lineData.length;
-        }
-        if (Array.isArray(barData)) {
-          length = Math.max(length, barData.length);
-        }
+        const length = Array.isArray(barData) ? barData.length : 0;
 
-        ctx.beginPath();
-        ctx.moveTo(startPoint.left.x, startPoint.left.y);
-        let nextPoint = {
-          line: {
-            x: 0,
-            y: 0,
-          },
-          bar: {
-            x: 0,
-            y: 0,
-          },
-        };
         for (let idx2 = 0; idx2 < length; idx2++) {
-          if (lineData !== undefined && idx2 < lineData.length) {
-            const data = lineData[idx2];
-            const xPoint = idx2 * scale + startPoint.left.x;
-            const yPoint = Math.floor(
-              startPoint.left.y - ((data - minMax.left.min) * size.height) / range.left,
-            );
-            nextPoint = {
-              ...nextPoint,
-              line: {
-                x: xPoint,
-                y: yPoint,
-              },
-            };
-            if (idx2 > 0) {
-              ctx.lineTo(xPoint, yPoint);
-              ctx.stroke();
-            }
-            if (typeof pointRadius === 'number' && pointRadius > 0) {
-              ctx.beginPath();
-              ctx.arc(xPoint, yPoint, pointRadius, 0, 2 * Math.PI, false);
-              ctx.fill();
-              ctx.closePath();
-            }
-          }
           if (barData !== undefined && idx2 < barData.length) {
-            ctx.moveTo(nextPoint.bar.x, nextPoint.bar.y);
             const data = barData[idx2];
             if (Array.isArray(data)) {
               if (!Array.isArray(barColor)) {
                 throw Error('barColor 데이터 입력 타입은 Array<string>이 되어야 합니다.');
               }
+              const xPoint = idx2 * scale + startPoint.left.x;
               for (let i = 0; i < data.length; i++) {
+                ctx.fillStyle = barColor[i] ? String(barColor[i]) : 'rgb(204, 204, 204)';
                 const d = data[i];
-                const dc = barColor[i];
+                const yPoint = -elementArea.left * d * (i + 1);
               }
             } else {
-              ctx.fillStyle = barColor ? String(barColor) : '#000';
+              ctx.fillStyle = barColor ? String(barColor) : 'rgb(204, 204, 204)';
               const xPoint = idx2 * scale + startPoint.left.x;
-              const yPoint = range.left * idx2;
+              const yPoint = -elementArea.left * data;
+
               const bw = typeof barWidth === 'number' ? barWidth : 50;
               if (idx2 === 0) {
+                ctx.fillRect(xPoint, area.start.y, bw / 2, yPoint);
               } else if (idx2 === barData.length - 1) {
+                ctx.fillRect(xPoint - bw / 2, area.start.y, bw / 2, yPoint);
               } else {
-                ctx.fillRect(xPoint - bw / 2, area.start.y, bw, -yPoint);
+                ctx.fillRect(xPoint - bw / 2, area.start.y, bw, yPoint);
               }
-              nextPoint = {
-                ...nextPoint,
-                bar: {
-                  x: xPoint,
-                  y: yPoint,
-                },
-              };
             }
           }
-          ctx.moveTo(nextPoint.line.x, nextPoint.line.y);
+        }
+      }
+
+      for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
+        const { name, linePointRadius, lineColor, lineWidth, lineData } = yAxis[idx1];
+        ctx.strokeStyle = lineColor || '#000';
+        ctx.fillStyle = lineColor || '#000';
+        ctx.lineWidth = lineWidth || 1;
+
+        const length = Array.isArray(lineData) ? lineData.length : 0;
+
+        ctx.beginPath();
+        const movePoint = {
+          x: startPoint.left.x,
+          y: startPoint.left.y,
+        };
+        for (let idx2 = 0; idx2 < length; idx2++) {
+          if (lineData !== undefined && idx2 < lineData.length) {
+            ctx.moveTo(movePoint.x, movePoint.y);
+            const data = lineData[idx2];
+            const xPoint = idx2 * scale + startPoint.left.x;
+            const yPoint = Math.floor(
+              startPoint.left.y - ((data - minMax.left.min) * size.height) / range.left,
+            );
+
+            movePoint.x = xPoint;
+            movePoint.y = yPoint;
+            if (idx2 > 0) {
+              ctx.lineTo(xPoint, yPoint);
+              ctx.stroke();
+            }
+            if (typeof linePointRadius === 'number' && linePointRadius > 0) {
+              ctx.beginPath();
+              ctx.arc(xPoint, yPoint, linePointRadius, 0, 2 * Math.PI, false);
+              ctx.fill();
+              ctx.closePath();
+            }
+          }
         }
         ctx.closePath();
       }

@@ -580,6 +580,8 @@ class Calculator {
   };
 
   public setRange = (axis: Partial<BowlArea<Partial<Axis>>>) => {
+    const isOutputArr = axis.bottom?.output && Array.isArray(axis.bottom.output);
+
     this.range.bottom = this.max.bottom - this.min.bottom;
 
     this.range.left = this.max.left - this.min.left;
@@ -655,11 +657,6 @@ class Calculator {
       left: (this.area.start.y - this.area.end.y) / this.range.left,
       right: (this.area.start.y - this.area.end.y) / this.range.right,
     };
-  };
-
-  public display = () => {
-    // eslint-disable-next-line no-console
-    console.log(this);
   };
 }
 

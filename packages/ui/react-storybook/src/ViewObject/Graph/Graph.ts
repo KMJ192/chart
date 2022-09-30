@@ -114,14 +114,14 @@ class Graph {
     // 10. axis 스타일 설정
     this.calculator.setAxisStyle(data.axis);
 
-    // 11. axis 그리기
+    // 11. draw axis info
     this.drawObj.drawAxisInfo(canvasLayer[0], data.axis);
+
+    // 12. draw series
+    this.drawObj.drawSeries(canvasLayer[0], data.series);
+
+    // 13. draw axis
     this.drawObj.drawAxis(canvasLayer[0]);
-
-    // 12. series 그리기
-    this.drawObj.drawSeries(canvasLayer[1], data.series, data.axis.bottom?.lineWidth || 1);
-
-    // this.calculator.display();
 
     return () => {
       // console.log('unmount');
