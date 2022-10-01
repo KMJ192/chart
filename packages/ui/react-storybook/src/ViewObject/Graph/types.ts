@@ -20,8 +20,8 @@ type Series = {
   linePointRadius: number;
   lineData: Array<number>;
   barWidth: number;
-  barColor: Array<string> | Array<Array<string>>;
-  barData: Array<number> | Array<Array<number>>;
+  barColor: Array<string | Array<string>>;
+  barData: Array<number | Array<number>>;
 };
 
 type RenderOptions = {

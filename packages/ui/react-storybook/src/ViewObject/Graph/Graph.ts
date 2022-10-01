@@ -118,7 +118,12 @@ class Graph {
     this.drawObj.drawAxisInfo(canvasLayer[0], data.axis);
 
     // 12. draw series
-    this.drawObj.drawSeries(canvasLayer[0], data.series);
+    const isOutputArr = data.axis.bottom?.output && Array.isArray(data.axis.bottom.output);
+    this.drawObj.drawSeries(
+      canvasLayer[0],
+      data.series,
+      isOutputArr ? (data.axis.bottom?.output as Array<string>).length : 0,
+    );
 
     // 13. draw axis
     this.drawObj.drawAxis(canvasLayer[0]);

@@ -105,6 +105,10 @@ class Draw {
       const unitsPerTick = axis.bottom?.unitsPerTick || 1;
       const isLastModuler = range.bottom % unitsPerTick !== 0;
 
+      const isOutputArr = axis.bottom?.output && Array.isArray(axis.bottom.output);
+      const step = isOutputArr ? 1 : unitsPerTick;
+      const dest = isOutputArr ? (axis.bottom?.output as Array<string>).length : range.bottom;
+
       ctx.lineWidth = tickWidht;
       ctx.font = font;
       ctx.fillStyle = fontColor;
@@ -120,20 +124,12 @@ class Draw {
         tickOut = tickHeight / 2;
       }
 
-      const isOutputArr = axis.bottom?.output && Array.isArray(axis.bottom.output);
-      const step = isOutputArr ? 1 : unitsPerTick;
-      const dest = isOutputArr ? (axis.bottom?.output as Array<string>).length : range.bottom;
       for (let i = 0; i <= dest; i += step) {
         const xPoint = crispPixel(i * elementArea.bottom + startPoint.bottom.x, tickWidht);
-
         if (renderOption.axisInfo.bottom.outputText) {
           let value = '';
-          if (
-            axis.bottom?.output &&
-            Array.isArray(axis.bottom.output) &&
-            axis.bottom.output.length > i
-          ) {
-            value = axis.bottom.output[i] || '';
+          if (isOutputArr) {
+            value = (axis.bottom?.output as Array<string>)[i] || '';
           } else {
             value = String(i);
           }
@@ -354,6 +350,7 @@ class Draw {
       left: Array<Partial<Series>>;
       right: Array<Partial<Series>>;
     }>,
+    outputArrLength: number,
   ) => {
     const { ctx } = layer;
 
@@ -371,77 +368,102 @@ class Draw {
       const { left: yAxis } = series;
       for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
         const { name, barData, barColor, barWidth } = yAxis[idx1];
+        if (barData !== undefined) {
+          let length = Array.isArray(barData) ? barData.length : 0;
+          length = Math.max(outputArrLength, length);
+          const bw = typeof barWidth === 'number' ? barWidth : 50;
 
-        const length = Array.isArray(barData) ? barData.length : 0;
+          // 1. draw bar 그래프
+          for (let idx2 = 0; idx2 <= length; idx2++) {
+            if (idx2 < barData.length) {
+              const data = barData[idx2];
+              if (Array.isArray(data)) {
+                // 1-1. 2D array 데이터
+                const xPoint = idx2 * scale + startPoint.left.x;
+                let next = area.start.y;
+                for (let i = 0; i < data.length; i++) {
+                  if (Array.isArray(barColor) && Array.isArray(barColor[idx2])) {
+                    ctx.fillStyle = barColor[idx2][i];
+                  } else if (Array.isArray(barColor) && typeof barColor[idx2] === 'string') {
+                    ctx.fillStyle = String(barColor[idx2]);
+                  } else if (typeof barColor === 'string') {
+                    ctx.fillStyle = barColor;
+                  } else {
+                    ctx.fillStyle = 'rgb(204, 204, 204)';
+                  }
+                  const d = data[i];
+                  const yPoint = -elementArea.left * d;
 
-        for (let idx2 = 0; idx2 < length; idx2++) {
-          if (barData !== undefined && idx2 < barData.length) {
-            const data = barData[idx2];
-            if (Array.isArray(data)) {
-              if (!Array.isArray(barColor)) {
-                throw Error('barColor 데이터 입력 타입은 Array<string>이 되어야 합니다.');
-              }
-              const xPoint = idx2 * scale + startPoint.left.x;
-              for (let i = 0; i < data.length; i++) {
-                ctx.fillStyle = barColor[i] ? String(barColor[i]) : 'rgb(204, 204, 204)';
-                const d = data[i];
-                const yPoint = -elementArea.left * d * (i + 1);
-              }
-            } else {
-              ctx.fillStyle = barColor ? String(barColor) : 'rgb(204, 204, 204)';
-              const xPoint = idx2 * scale + startPoint.left.x;
-              const yPoint = -elementArea.left * data;
-
-              const bw = typeof barWidth === 'number' ? barWidth : 50;
-              if (idx2 === 0) {
-                ctx.fillRect(xPoint, area.start.y, bw / 2, yPoint);
-              } else if (idx2 === barData.length - 1) {
-                ctx.fillRect(xPoint - bw / 2, area.start.y, bw / 2, yPoint);
+                  if (idx2 === 0) {
+                    ctx.fillRect(xPoint, next, bw / 2, yPoint);
+                  } else if (idx2 === length - 1) {
+                    ctx.fillRect(xPoint - bw / 2, next, bw / 2, yPoint);
+                  } else {
+                    ctx.fillRect(xPoint - bw / 2, next, bw, yPoint);
+                  }
+                  next += yPoint;
+                }
               } else {
-                ctx.fillRect(xPoint - bw / 2, area.start.y, bw, yPoint);
+                // 1-2. 1D array 데이터
+                if (Array.isArray(barColor)) {
+                  if (!Array.isArray(barColor[idx2])) {
+                    ctx.fillStyle = String(barColor[idx2]) || 'rgb(204, 204, 204)';
+                  } else {
+                    throw Error('barColor 데이터 타입이 잘못되었습니다.');
+                  }
+                } else if (typeof barColor === 'string') {
+                  ctx.fillStyle = barColor;
+                }
+                const xPoint = idx2 * scale + startPoint.left.x;
+                const yPoint = -elementArea.left * data;
+
+                if (idx2 === 0) {
+                  ctx.fillRect(xPoint, area.start.y, bw / 2, yPoint);
+                } else if (idx2 === length - 1) {
+                  ctx.fillRect(xPoint - bw / 2, area.start.y, bw / 2, yPoint);
+                } else {
+                  ctx.fillRect(xPoint - bw / 2, area.start.y, bw, yPoint);
+                }
               }
             }
           }
         }
       }
 
+      // 2. draw line 그래프
       for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
         const { name, linePointRadius, lineColor, lineWidth, lineData } = yAxis[idx1];
-        ctx.strokeStyle = lineColor || '#000';
-        ctx.fillStyle = lineColor || '#000';
-        ctx.lineWidth = lineWidth || 1;
+        if (lineData !== undefined) {
+          ctx.strokeStyle = lineColor || '#000';
+          ctx.fillStyle = lineColor || '#000';
+          ctx.lineWidth = lineWidth || 1;
 
-        const length = Array.isArray(lineData) ? lineData.length : 0;
+          const length = Array.isArray(lineData) ? lineData.length : 0;
 
-        ctx.beginPath();
-        const movePoint = {
-          x: startPoint.left.x,
-          y: startPoint.left.y,
-        };
-        for (let idx2 = 0; idx2 < length; idx2++) {
-          if (lineData !== undefined && idx2 < lineData.length) {
-            ctx.moveTo(movePoint.x, movePoint.y);
-            const data = lineData[idx2];
-            const xPoint = idx2 * scale + startPoint.left.x;
-            const yPoint = Math.floor(
-              startPoint.left.y - ((data - minMax.left.min) * size.height) / range.left,
-            );
-
-            movePoint.x = xPoint;
-            movePoint.y = yPoint;
-            if (idx2 > 0) {
-              ctx.lineTo(xPoint, yPoint);
-              ctx.stroke();
-            }
-            if (typeof linePointRadius === 'number' && linePointRadius > 0) {
-              ctx.beginPath();
-              ctx.arc(xPoint, yPoint, linePointRadius, 0, 2 * Math.PI, false);
-              ctx.fill();
-              ctx.closePath();
+          ctx.beginPath();
+          ctx.moveTo(startPoint.left.x, startPoint.left.y);
+          for (let idx2 = 0; idx2 < length; idx2++) {
+            if (idx2 < lineData.length) {
+              const data = lineData[idx2];
+              const xPoint = idx2 * scale + startPoint.left.x;
+              const yPoint = Math.floor(
+                startPoint.left.y - ((data - minMax.left.min) * size.height) / range.left,
+              );
+              if (idx2 > 0) {
+                ctx.lineTo(xPoint, yPoint);
+                ctx.stroke();
+              }
+              if (typeof linePointRadius === 'number' && linePointRadius > 0) {
+                ctx.beginPath();
+                ctx.arc(xPoint, yPoint, linePointRadius, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.closePath();
+              }
+              ctx.moveTo(xPoint, yPoint);
             }
           }
+          ctx.closePath();
         }
-        ctx.closePath();
       }
     }
 
