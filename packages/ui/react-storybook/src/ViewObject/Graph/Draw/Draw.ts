@@ -87,6 +87,7 @@ class Draw {
     const startPoint = this.calculator.startPointerGetter;
     const axisStyle = this.calculator.axisStyleGetter;
     const minMax = this.calculator.minMaxGetter;
+    const axisOutputArr = this.calculator.axisOutputArrGetter;
 
     ctx.save();
 
@@ -105,7 +106,7 @@ class Draw {
       const unitsPerTick = axis.bottom?.unitsPerTick || 1;
       const isLastModuler = range.bottom % unitsPerTick !== 0;
 
-      const isOutputArr = axis.bottom?.output && Array.isArray(axis.bottom.output);
+      const isOutputArr = axisOutputArr.bottom.length > 0;
       const step = isOutputArr ? 1 : unitsPerTick;
       const dest = isOutputArr ? (axis.bottom?.output as Array<string>).length : range.bottom;
 
@@ -129,7 +130,7 @@ class Draw {
         if (renderOption.axisInfo.bottom.outputText) {
           let value = '';
           if (isOutputArr) {
-            value = (axis.bottom?.output as Array<string>)[i] || '';
+            value = axisOutputArr.bottom[i] || '';
           } else {
             value = String(i);
           }
@@ -192,8 +193,11 @@ class Draw {
 
         if (renderOption.axisInfo.bottom.outputText) {
           let value = '';
-          if (axis.bottom?.output && axis.bottom.output[range.bottom + 1] !== undefined) {
-            value = axis.bottom.output[range.bottom + 1];
+          if (
+            axisOutputArr.bottom.length > 0 &&
+            axisOutputArr.bottom[range.bottom + 1] !== undefined
+          ) {
+            value = axisOutputArr.bottom[range.bottom + 1];
           } else {
             value = String(minMax.bottom.max);
           }
@@ -350,7 +354,6 @@ class Draw {
       left: Array<Partial<Series>>;
       right: Array<Partial<Series>>;
     }>,
-    outputArrLength: number,
   ) => {
     const { ctx } = layer;
 
@@ -361,6 +364,7 @@ class Draw {
     const range = this.calculator.rangeGetter;
     const area = this.calculator.areaGetter;
     const elementArea = this.calculator.elementAreaGetter;
+    const axisOutputArr = this.calculator.axisOutputArrGetter;
 
     ctx.save();
 
@@ -370,11 +374,12 @@ class Draw {
         const { name, barData, barColor, barWidth } = yAxis[idx1];
         if (barData !== undefined) {
           let length = Array.isArray(barData) ? barData.length : 0;
-          length = Math.max(outputArrLength, length);
+          length = Math.max(axisOutputArr.bottom.length, length);
           const bw = typeof barWidth === 'number' ? barWidth : 50;
 
           // 1. draw bar 그래프
           for (let idx2 = 0; idx2 <= length; idx2++) {
+            const isLast = idx2 === range.bottom;
             if (idx2 < barData.length) {
               const data = barData[idx2];
               if (Array.isArray(data)) {
@@ -396,7 +401,7 @@ class Draw {
 
                   if (idx2 === 0) {
                     ctx.fillRect(xPoint, next, bw / 2, yPoint);
-                  } else if (idx2 === length - 1) {
+                  } else if (idx2 === length - 1 || isLast) {
                     ctx.fillRect(xPoint - bw / 2, next, bw / 2, yPoint);
                   } else {
                     ctx.fillRect(xPoint - bw / 2, next, bw, yPoint);
@@ -409,7 +414,7 @@ class Draw {
                   if (!Array.isArray(barColor[idx2])) {
                     ctx.fillStyle = String(barColor[idx2]) || 'rgb(204, 204, 204)';
                   } else {
-                    throw Error('barColor 데이터 타입이 잘못되었습니다.');
+                    ctx.fillStyle = 'rgb(204, 204, 204)';
                   }
                 } else if (typeof barColor === 'string') {
                   ctx.fillStyle = barColor;
@@ -419,11 +424,14 @@ class Draw {
 
                 if (idx2 === 0) {
                   ctx.fillRect(xPoint, area.start.y, bw / 2, yPoint);
-                } else if (idx2 === length - 1) {
+                } else if (idx2 === length - 1 || isLast) {
                   ctx.fillRect(xPoint - bw / 2, area.start.y, bw / 2, yPoint);
                 } else {
                   ctx.fillRect(xPoint - bw / 2, area.start.y, bw, yPoint);
                 }
+              }
+              if (idx2 === range.bottom) {
+                break;
               }
             }
           }
@@ -443,6 +451,7 @@ class Draw {
           ctx.beginPath();
           ctx.moveTo(startPoint.left.x, startPoint.left.y);
           for (let idx2 = 0; idx2 < length; idx2++) {
+            const isLast = idx2 === range.bottom;
             if (idx2 < lineData.length) {
               const data = lineData[idx2];
               const xPoint = idx2 * scale + startPoint.left.x;
@@ -460,6 +469,9 @@ class Draw {
                 ctx.closePath();
               }
               ctx.moveTo(xPoint, yPoint);
+            }
+            if (isLast) {
+              break;
             }
           }
           ctx.closePath();

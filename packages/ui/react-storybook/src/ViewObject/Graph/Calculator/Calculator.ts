@@ -97,6 +97,7 @@ class Calculator {
 
   private middlePosition: number;
 
+  // 각 축 별 그려질 시작 지점
   private startPoint: BowlArea<Vector> = {
     bottom: {
       x: 0,
@@ -175,6 +176,12 @@ class Calculator {
     },
     legend: true,
     tooltip: true,
+  };
+
+  private axisOutputArray: BowlArea<Array<string>> = {
+    bottom: [],
+    left: [],
+    right: [],
   };
 
   constructor({ padding, graphType, tickSize }: CalculatorParam) {
@@ -366,6 +373,10 @@ class Calculator {
         min: this.min.right,
       },
     };
+  }
+
+  get axisOutputArrGetter(): BowlArea<Array<string>> {
+    return this.axisOutputArray;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -580,16 +591,32 @@ class Calculator {
   };
 
   public setRange = (axis: Partial<BowlArea<Partial<Axis>>>) => {
-    const isOutputArr = axis.bottom?.output && Array.isArray(axis.bottom.output);
+    // 입력된 output 배열이 있을 경우 range가 변경되어야 하므로 먼저 설정
+    if (axis.bottom?.output && Array.isArray(axis.bottom.output)) {
+      this.axisOutputArray.bottom = axis.bottom.output;
+    }
+    if (axis.left?.output && Array.isArray(axis.left.output)) {
+      this.axisOutputArray.left = axis.left.output;
+    }
+    if (axis.right?.output && Array.isArray(axis.right.output)) {
+      this.axisOutputArray.right = axis.right.output;
+    }
 
-    if (isOutputArr && (axis.bottom?.output as Array<string>).length - 1 > 0) {
-      this.range.bottom = (axis.bottom?.output as Array<string>).length - 1;
+    if (this.axisOutputArray.bottom.length > 0) {
+      this.range.bottom = this.axisOutputArray.bottom.length - 1;
     } else {
       this.range.bottom = this.max.bottom - this.min.bottom;
     }
-
-    this.range.left = this.max.left - this.min.left;
-    this.range.right = this.max.right - this.min.right;
+    if (this.axisOutputArray.left.length > 0) {
+      this.range.left = this.axisOutputArray.left.length - 1;
+    } else {
+      this.range.left = this.max.left - this.min.left;
+    }
+    if (this.axisOutputArray.right.length > 0) {
+      this.range.right = this.axisOutputArray.right.length - 1;
+    } else {
+      this.range.right = this.max.right - this.min.right;
+    }
 
     const leftUnitPerTick = axis.left?.unitsPerTick || 1;
     const leftMod = this.range.left % leftUnitPerTick;
