@@ -105,8 +105,16 @@ const series: Partial<{
       name: 'left2',
       lineColor: 'blue',
       lineWidth: 1,
-      // lineData: [8, 2, 7, 1, 3, 1, 10, 8, 4, 3],
-      lineData: [4, 2, 7, 8, 4, 6, 3, 1, 3, 2],
+      lineData: [8, 2, 7, 1, 3, 1, 10, 8, 4, 3],
+      linePointRadius: 3,
+    },
+  ],
+  right: [
+    {
+      name: 'right1',
+      lineColor: 'green',
+      lineWidth: 1,
+      // lineData: [3, 4, 6, 2, 1, 4, 2, 6, 0, 3],
       barColor: [
         ['red', 'blue', 'skyblue', 'green'],
         ['blue', 'green'],
@@ -120,31 +128,16 @@ const series: Partial<{
         'black',
       ],
       barData: [[2, 1, 2, 4], [1, 2], 7, 8, 4, 6, 3, 1, 3, 2],
-      // barColor: [
-      //   ['red', 'blue', 'skyblue', 'green'],
-      //   ['blue', 'green'],
-      // ],
-      // barData: [
-      //   [2, 1, 2, 4],
-      //   [1, 2],
-      // ],
+    },
+    {
+      name: 'right2',
       linePointRadius: 3,
+      lineColor: 'black',
+      lineWidth: 1,
+      lineData: [1, 2, 3, 4, 7, 6, 5, 2, 3, 9],
+      // barData: [[2, 1, 2, 4], [1, 2], 7, 8, 4, 6, 3, 1, 3, 2],
     },
   ],
-  // right: [
-  //   {
-  //     name: 'right1',
-  //     lineColor: 'green',
-  //     lineWidth: 1,
-  //     lineData: [3, 4, 6, 2, 1, 4, 2, 6, 0, 3],
-  //   },
-  //   {
-  //     name: 'right2',
-  //     lineColor: 'black',
-  //     lineWidth: 1,
-  //     lineData: [1, 2, 3, 4, 7, 6, 5, 2, 3, 9],
-  //   },
-  // ],
 };
 
 function Graph({ type }: Props) {
@@ -165,7 +158,7 @@ function Graph({ type }: Props) {
       series,
     });
     return () => {
-      unmount();
+      if (typeof unmount === 'function') unmount();
     };
   }, [graph]);
 

@@ -380,7 +380,7 @@ class Calculator {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public validationCheck = (data: GraphDataParam) => {
+  public validationCheck = (data?: GraphDataParam) => {
     // 1. 그냥 데이터가 없음 -> throw
     if (!data) throw Error('Necessary value : axis info, series info');
 

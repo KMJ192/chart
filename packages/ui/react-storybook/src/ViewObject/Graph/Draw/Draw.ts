@@ -366,8 +366,11 @@ class Draw {
     const elementArea = this.calculator.elementAreaGetter;
     const axisOutputArr = this.calculator.axisOutputArrGetter;
 
+    const seriesStartPos = startPoint.left;
+
     ctx.save();
 
+    // 1. draw bar 그래프 (left y axis)
     if (Array.isArray(series.left)) {
       const { left: yAxis } = series;
       for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
@@ -375,16 +378,15 @@ class Draw {
         if (barData !== undefined) {
           let length = Array.isArray(barData) ? barData.length : 0;
           length = Math.max(axisOutputArr.bottom.length, length);
-          const bw = typeof barWidth === 'number' ? barWidth : 50;
+          const bw = typeof barWidth === 'number' ? barWidth : 30;
 
-          // 1. draw bar 그래프
           for (let idx2 = 0; idx2 <= length; idx2++) {
             const isLast = idx2 === range.bottom;
             if (idx2 < barData.length) {
               const data = barData[idx2];
               if (Array.isArray(data)) {
                 // 1-1. 2D array 데이터
-                const xPoint = idx2 * scale + startPoint.left.x;
+                const xPoint = idx2 * scale + seriesStartPos.x;
                 let next = area.start.y;
                 for (let i = 0; i < data.length; i++) {
                   if (Array.isArray(barColor) && Array.isArray(barColor[idx2])) {
@@ -437,8 +439,82 @@ class Draw {
           }
         }
       }
+    }
 
-      // 2. draw line 그래프
+    // 2. draw bar 그래프 (right y axis)
+    if (Array.isArray(series.right)) {
+      const { right: yAxis } = series;
+      for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
+        const { name, barData, barColor, barWidth } = yAxis[idx1];
+        if (barData !== undefined) {
+          let length = Array.isArray(barData) ? barData.length : 0;
+          length = Math.max(axisOutputArr.bottom.length, length);
+          const bw = typeof barWidth === 'number' ? barWidth : 30;
+
+          for (let idx2 = 0; idx2 <= length; idx2++) {
+            const isLast = idx2 === range.bottom;
+            if (idx2 < barData.length) {
+              const data = barData[idx2];
+              if (Array.isArray(data)) {
+                // 1-1. 2D array 데이터
+                const xPoint = idx2 * scale + seriesStartPos.x;
+                let next = area.start.y;
+                for (let i = 0; i < data.length; i++) {
+                  if (Array.isArray(barColor) && Array.isArray(barColor[idx2])) {
+                    ctx.fillStyle = barColor[idx2][i];
+                  } else if (Array.isArray(barColor) && typeof barColor[idx2] === 'string') {
+                    ctx.fillStyle = String(barColor[idx2]);
+                  } else if (typeof barColor === 'string') {
+                    ctx.fillStyle = barColor;
+                  } else {
+                    ctx.fillStyle = 'rgb(204, 204, 204)';
+                  }
+                  const d = data[i];
+                  const yPoint = -elementArea.right * d;
+
+                  if (idx2 === 0) {
+                    ctx.fillRect(xPoint, next, bw / 2, yPoint);
+                  } else if (idx2 === length - 1 || isLast) {
+                    ctx.fillRect(xPoint - bw / 2, next, bw / 2, yPoint);
+                  } else {
+                    ctx.fillRect(xPoint - bw / 2, next, bw, yPoint);
+                  }
+                  next += yPoint;
+                }
+              } else {
+                // 1-2. 1D array 데이터
+                if (Array.isArray(barColor)) {
+                  if (!Array.isArray(barColor[idx2])) {
+                    ctx.fillStyle = String(barColor[idx2]) || 'rgb(204, 204, 204)';
+                  } else {
+                    ctx.fillStyle = 'rgb(204, 204, 204)';
+                  }
+                } else if (typeof barColor === 'string') {
+                  ctx.fillStyle = barColor;
+                }
+                const xPoint = idx2 * scale + seriesStartPos.x;
+                const yPoint = -elementArea.right * data;
+
+                if (idx2 === 0) {
+                  ctx.fillRect(xPoint, area.start.y, bw / 2, yPoint);
+                } else if (idx2 === length - 1 || isLast) {
+                  ctx.fillRect(xPoint - bw / 2, area.start.y, bw / 2, yPoint);
+                } else {
+                  ctx.fillRect(xPoint - bw / 2, area.start.y, bw, yPoint);
+                }
+              }
+              if (idx2 === range.bottom) {
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // 3. draw line 그래프 (left y axis)
+    if (Array.isArray(series.left)) {
+      const { left: yAxis } = series;
       for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
         const { name, linePointRadius, lineColor, lineWidth, lineData } = yAxis[idx1];
         if (lineData !== undefined) {
@@ -449,14 +525,57 @@ class Draw {
           const length = Array.isArray(lineData) ? lineData.length : 0;
 
           ctx.beginPath();
-          ctx.moveTo(startPoint.left.x, startPoint.left.y);
+          ctx.moveTo(seriesStartPos.x, seriesStartPos.y);
           for (let idx2 = 0; idx2 < length; idx2++) {
             const isLast = idx2 === range.bottom;
             if (idx2 < lineData.length) {
               const data = lineData[idx2];
-              const xPoint = idx2 * scale + startPoint.left.x;
+              const xPoint = idx2 * scale + seriesStartPos.x;
               const yPoint = Math.floor(
-                startPoint.left.y - ((data - minMax.left.min) * size.height) / range.left,
+                seriesStartPos.y - ((data - minMax.left.min) * size.height) / range.left,
+              );
+              if (idx2 > 0) {
+                ctx.lineTo(xPoint, yPoint);
+                ctx.stroke();
+              }
+              if (typeof linePointRadius === 'number' && linePointRadius > 0) {
+                ctx.beginPath();
+                ctx.arc(xPoint, yPoint, linePointRadius, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.closePath();
+              }
+              ctx.moveTo(xPoint, yPoint);
+            }
+            if (isLast) {
+              break;
+            }
+          }
+          ctx.closePath();
+        }
+      }
+    }
+
+    // 4. draw line 그래프 (right y axis)
+    if (Array.isArray(series.right)) {
+      const { right: yAxis } = series;
+      for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
+        const { name, linePointRadius, lineColor, lineWidth, lineData } = yAxis[idx1];
+        if (lineData !== undefined) {
+          ctx.strokeStyle = lineColor || '#000';
+          ctx.fillStyle = lineColor || '#000';
+          ctx.lineWidth = lineWidth || 1;
+
+          const length = Array.isArray(lineData) ? lineData.length : 0;
+
+          ctx.beginPath();
+          ctx.moveTo(seriesStartPos.x, seriesStartPos.y);
+          for (let idx2 = 0; idx2 < length; idx2++) {
+            const isLast = idx2 === range.bottom;
+            if (idx2 < lineData.length) {
+              const data = lineData[idx2];
+              const xPoint = idx2 * scale + seriesStartPos.x;
+              const yPoint = Math.floor(
+                seriesStartPos.y - ((data - minMax.right.min) * size.height) / range.left,
               );
               if (idx2 > 0) {
                 ctx.lineTo(xPoint, yPoint);

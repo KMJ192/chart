@@ -11,6 +11,8 @@ class Canvas {
 
   private isAppend: boolean;
 
+  private events: Array<unknown>;
+
   constructor({ nodeId, canvasLayerInfo, width, height }: CanvasParam) {
     const dpr = window.devicePixelRatio;
 
@@ -61,6 +63,8 @@ class Canvas {
     });
 
     this.isAppend = false;
+
+    this.events = [];
   }
 
   public correctionCanvas = () => {
@@ -84,51 +88,29 @@ class Canvas {
     };
   };
 
-  public drawLine = (layerLevel: number, startPosition: Vector, endPosition: Vector) => {
-    const { ctx } = this.canvasLayer[layerLevel];
-
-    ctx.save();
-
-    ctx.beginPath();
-    ctx.moveTo(startPosition.x, startPosition.y);
-    ctx.lineTo(endPosition.x, endPosition.y);
-    ctx.stroke();
-    ctx.closePath();
-
-    ctx.restore();
-  };
-
-  public drawCycle = (layerLevel: number, position: Vector, radius: number, isFill?: boolean) => {
-    const { ctx } = this.canvasLayer[layerLevel];
-    const { x, y } = position;
-
-    ctx.save();
-
-    // ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
-    if (isFill) {
-      ctx.fill();
-    }
-    // ctx.closePath();
-
-    ctx.restore();
-  };
-
-  public drawText = (layerLevel: number, position: Vector, text: string) => {
-    const { ctx } = this.canvasLayer[layerLevel];
-    const { x, y } = position;
-
-    ctx.save();
-
-    ctx.fillText(text, x, y);
-
-    ctx.restore();
-  };
-
   public appendCanvasNode = () => {
     if (!this.isAppend) {
       const node = document.getElementById(this.nodeId);
       node?.appendChild(this.canvasContainer);
+    }
+  };
+
+  public addEvents = (event: () => (() => void | unknown) | Array<() => () => void | unknown>) => {
+    if (Array.isArray(event)) {
+      for (let i = 0; i < event.length; i++) {
+        this.events.push(event[i]());
+      }
+      return;
+    }
+    this.events.push(event());
+  };
+
+  public removeEvents = () => {
+    for (let i = 0; i < this.events.length; i++) {
+      const retFunc = this.events[i];
+      if (typeof retFunc === 'function') {
+        retFunc();
+      }
     }
   };
 

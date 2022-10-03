@@ -1,9 +1,12 @@
+import { isEqual } from 'lodash';
+
 import Canvas from '../Canvas';
 import Calculator from './Calculator';
 import Draw from './Draw';
 
 import type { CanvasLayerInfo } from '../Canvas/types';
 import type { GraphDataParam, GraphType, GraphParam, RenderOptions } from './types';
+import { throttle } from 'lodash';
 
 class Graph {
   private graphType: GraphType;
@@ -33,6 +36,10 @@ class Graph {
     width: 1800,
     height: 700,
   };
+
+  private data?: GraphDataParam;
+
+  private renderOptions?: Partial<RenderOptions>;
 
   constructor({ graphType, nodeId, width, height, padding, tickSize }: Partial<GraphParam>) {
     if (!nodeId) throw Error('Necessary value : nodeId ');
@@ -77,54 +84,88 @@ class Graph {
     this.drawObj = new Draw({ calculator: this.calculator });
   }
 
-  public render(data: GraphDataParam, renderOptions?: Partial<RenderOptions>) {
-    // 1. canvas 노드 생성
-    this.canvas.appendCanvasNode();
+  private draw = () => {
+    this.canvas.correctionCanvas();
 
     const canvasLayer = this.canvas.getCanvasLayer;
 
     // 2. 그래프 렌더링 옵션 설정
     this.calculator.renderOptionSetter = {
-      series: renderOptions?.series,
-      axis: renderOptions?.axis,
-      data,
+      series: this.renderOptions?.series,
+      axis: this.renderOptions?.axis,
+      data: this.data,
     };
-
     // 3. 데이터 유효성 검사
-    this.calculator.validationCheck(data);
+    this.calculator.validationCheck(this.data);
 
-    // 4. 최대값 최소값 설정
-    this.calculator.setMinMax(data);
+    if (this.data) {
+      // 4. 최대값 최소값 설정
+      this.calculator.setMinMax(this.data);
 
-    // 5. axis 데이터 별 range 설정
-    this.calculator.setRange(data.axis);
+      // 5. axis 데이터 별 range 설정
+      this.calculator.setRange(this.data.axis);
 
-    // 6. 크기 설정
-    this.calculator.setSize(canvasLayer[0].canvas);
+      // 6. 크기 설정
+      this.calculator.setSize(canvasLayer[0].canvas);
 
-    // 7. axis 별 시작점 설정
-    this.calculator.setStartPoint();
+      // 7. axis 별 시작점 설정
+      this.calculator.setStartPoint();
 
-    // 8. 그래프 내부 영역
-    this.calculator.setArea();
+      // 8. 그래프 내부 영역
+      this.calculator.setArea();
 
-    // 9. 이거 머였더라
-    this.calculator.setElementArea();
+      // 9. series 차지 영역
+      this.calculator.setElementArea();
 
-    // 10. axis 스타일 설정
-    this.calculator.setAxisStyle(data.axis);
+      // 10. axis 스타일 설정
+      this.calculator.setAxisStyle(this.data.axis);
 
-    // 11. draw axis info
-    this.drawObj.drawAxisInfo(canvasLayer[0], data.axis);
+      // 11. draw axis info
+      this.drawObj.drawAxisInfo(canvasLayer[0], this.data.axis);
 
-    // 12. draw series
-    this.drawObj.drawSeries(canvasLayer[0], data.series);
+      // 12. draw series
+      this.drawObj.drawSeries(canvasLayer[0], this.data.series);
 
-    // 13. draw axis
-    this.drawObj.drawAxis(canvasLayer[0]);
+      // 13. draw axis
+      this.drawObj.drawAxis(canvasLayer[0]);
+    }
+  };
+
+  private canvasResize = () => {
+    const resizeEvent = throttle(() => {
+      this.draw();
+    }, 800);
+
+    window.addEventListener('resize', resizeEvent);
+    return () => {
+      window.removeEventListener('resize', resizeEvent);
+    };
+  };
+
+  public render(data: GraphDataParam, renderOptions?: Partial<RenderOptions>) {
+    this.canvas.appendCanvasNode();
+
+    const isUpdateData = !isEqual(this.data, data);
+    const isUpdateRenderOption = !isEqual(this.renderOptions, renderOptions);
+
+    if (!isUpdateData && !isUpdateRenderOption) {
+      return null;
+    }
+
+    if (isUpdateData) {
+      this.data = data;
+    }
+
+    if (isUpdateRenderOption) {
+      this.renderOptions = renderOptions;
+    }
+
+    this.canvas.addEvents(this.canvasResize);
+
+    this.draw();
 
     return () => {
-      // console.log('unmount');
+      this.canvas.removeEvents();
     };
   }
 }
