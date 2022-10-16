@@ -5,12 +5,10 @@ import Calculator from './Calculator';
 import Draw from './Draw';
 
 import type { CanvasLayerInfo } from '../Canvas/types';
-import type { GraphDataParam, GraphType, GraphParam, RenderOptions } from './types';
+import type { GraphDataParam, GraphParam, RenderOptions } from './types';
 import { throttle } from 'lodash';
 
 class Graph {
-  private graphType: GraphType;
-
   private canvas: Canvas;
 
   private calculator: Calculator;
@@ -41,11 +39,8 @@ class Graph {
 
   private renderOptions?: Partial<RenderOptions>;
 
-  constructor({ graphType, nodeId, width, height, padding, tickSize }: Partial<GraphParam>) {
+  constructor({ nodeId, width, height, padding, tickSize }: Partial<GraphParam>) {
     if (!nodeId) throw Error('Necessary value : nodeId ');
-    if (!graphType) throw Error('Necessary value : graphType');
-
-    this.graphType = graphType;
 
     this.canvasSize.width = width || this.canvasSize.width;
     this.canvasSize.height = height || this.canvasSize.height;
@@ -58,7 +53,6 @@ class Graph {
     });
 
     this.calculator = new Calculator({
-      graphType,
       padding: {
         top: padding?.top || 10,
         bottom: padding?.bottom || 10,

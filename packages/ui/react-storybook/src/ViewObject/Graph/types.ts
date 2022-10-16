@@ -53,7 +53,6 @@ type RenderOptions = {
 
 type GraphParam = {
   nodeId: string;
-  graphType: GraphType;
   width: number;
   height: number;
   padding: Partial<RectArea<number>>;

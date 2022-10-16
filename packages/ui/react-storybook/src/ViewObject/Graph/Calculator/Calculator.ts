@@ -4,7 +4,6 @@ import type { CalculatorParam } from './types';
 import type {
   Axis,
   GraphDataParam,
-  GraphType,
   RenderOptions,
   RenderOptionsSetterParam,
   Series,
@@ -12,8 +11,6 @@ import type {
 
 // 데이터 연산
 class Calculator {
-  private graphType: GraphType;
-
   // canvas padding
   private padding: RectArea<number>;
 
@@ -126,7 +123,6 @@ class Calculator {
   };
 
   private elementArea: BowlArea<number> = {
-    // top: 0,
     bottom: 0,
     left: 0,
     right: 0,
@@ -184,9 +180,7 @@ class Calculator {
     right: [],
   };
 
-  constructor({ padding, graphType, tickSize }: CalculatorParam) {
-    this.graphType = graphType;
-
+  constructor({ padding, tickSize }: CalculatorParam) {
     this.padding = padding;
 
     this.scale = 0;
@@ -458,8 +452,10 @@ class Calculator {
     ) {
       const tmp = cloneDeep(isSet);
       // 2-1. left axis 참조 -> left y축 및 종속 x축(top or bottom)의 max, min
-      if (!isSet.left.max || !isSet.left.min || !isSet.bottom.max) {
-        series.left?.forEach((s: Partial<Series>) => {
+      if (Array.isArray(series.left) && (!isSet.left.max || !isSet.left.min || !isSet.bottom.max)) {
+        for (let i = 0; i < series.left.length; i++) {
+          const s = series.left[i];
+
           const isLineData = Array.isArray(s.lineData);
           const isBarData = Array.isArray(s.barData);
           // ===== x축의 max 설정 =====
@@ -509,12 +505,17 @@ class Calculator {
               }
             });
           }
-        });
+        }
       }
 
       // 2-2. right axis 참조 -> right y축 및 종속 x축(top or bottom)의 max, min
-      if (!isSet.right.max || !isSet.right.min || !isSet.bottom.max) {
-        series.right?.forEach((s: Partial<Series>) => {
+      if (
+        Array.isArray(series.right) &&
+        (!isSet.right.max || !isSet.right.min || !isSet.bottom.max)
+      ) {
+        for (let i = 0; i < series.right.length; i++) {
+          const s = series.right[i];
+
           const isLineData = Array.isArray(s.lineData);
           const isBarData = Array.isArray(s.barData);
           // ===== x축의 max 설정 =====
@@ -565,7 +566,7 @@ class Calculator {
               }
             });
           }
-        });
+        }
       }
       // ===== x축 min 값 세팅 =====
       if (!isSet.bottom.min) {
@@ -605,7 +606,7 @@ class Calculator {
     if (this.axisOutputArray.bottom.length > 0) {
       this.range.bottom = this.axisOutputArray.bottom.length - 1;
     } else {
-      this.range.bottom = this.max.bottom - this.min.bottom;
+      this.range.bottom = this.max.bottom - this.min.bottom - 1;
     }
     if (this.axisOutputArray.left.length > 0) {
       this.range.left = this.axisOutputArray.left.length - 1;
@@ -634,16 +635,16 @@ class Calculator {
   };
 
   public setSize = (canvas: HTMLCanvasElement) => {
-    const dpr = window.devicePixelRatio;
+    // const dpr = window.devicePixelRatio;
     this.size.width =
-      canvas.width / dpr -
+      canvas.width -
       this.padding.left -
       this.padding.right -
       this.axisStyle.left.tickSize.height -
       this.axisStyle.right.tickSize.height;
 
     this.size.height =
-      canvas.height / dpr -
+      canvas.height -
       this.padding.bottom -
       this.padding.top -
       this.axisStyle.bottom.tickSize.height;

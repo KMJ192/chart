@@ -384,9 +384,13 @@ class Draw {
             const isLast = idx2 === range.bottom;
             if (idx2 < barData.length) {
               const data = barData[idx2];
+              let xPoint = idx2 * scale + seriesStartPos.x;
+              if (length === 1) {
+                // 데이터가 1개일 경우 그래프의 중앙에 위치
+                xPoint = size.width / 2 + seriesStartPos.x;
+              }
               if (Array.isArray(data)) {
                 // 1-1. 2D array 데이터
-                const xPoint = idx2 * scale + seriesStartPos.x;
                 let next = area.start.y;
                 for (let i = 0; i < data.length; i++) {
                   if (Array.isArray(barColor) && Array.isArray(barColor[idx2])) {
@@ -401,9 +405,9 @@ class Draw {
                   const d = data[i];
                   const yPoint = -elementArea.left * d;
 
-                  if (idx2 === 0) {
+                  if (idx2 === 0 && length !== 1) {
                     ctx.fillRect(xPoint, next, bw / 2, yPoint);
-                  } else if (idx2 === length - 1 || isLast) {
+                  } else if ((idx2 === length - 1 || isLast) && length !== 1) {
                     ctx.fillRect(xPoint - bw / 2, next, bw / 2, yPoint);
                   } else {
                     ctx.fillRect(xPoint - bw / 2, next, bw, yPoint);
@@ -421,12 +425,15 @@ class Draw {
                 } else if (typeof barColor === 'string') {
                   ctx.fillStyle = barColor;
                 }
-                const xPoint = idx2 * scale + startPoint.left.x;
                 const yPoint = -elementArea.left * data;
 
-                if (idx2 === 0) {
+                if (idx2 === 0 && length !== 1) {
                   ctx.fillRect(xPoint, area.start.y, bw / 2, yPoint);
-                } else if (idx2 === length - 1 || isLast) {
+                } else if (
+                  minMax.bottom.max <= idx2 + 1 &&
+                  (idx2 === length - 1 || isLast) &&
+                  length !== 1
+                ) {
                   ctx.fillRect(xPoint - bw / 2, area.start.y, bw / 2, yPoint);
                 } else {
                   ctx.fillRect(xPoint - bw / 2, area.start.y, bw, yPoint);
@@ -455,9 +462,14 @@ class Draw {
             const isLast = idx2 === range.bottom;
             if (idx2 < barData.length) {
               const data = barData[idx2];
+              let xPoint = idx2 * scale + seriesStartPos.x;
+              if (length === 1) {
+                // 데이터가 1개일 경우 그래프의 중앙에 위치
+                xPoint = size.width / 2 + seriesStartPos.x;
+              }
               if (Array.isArray(data)) {
                 // 1-1. 2D array 데이터
-                const xPoint = idx2 * scale + seriesStartPos.x;
+
                 let next = area.start.y;
                 for (let i = 0; i < data.length; i++) {
                   if (Array.isArray(barColor) && Array.isArray(barColor[idx2])) {
@@ -472,9 +484,9 @@ class Draw {
                   const d = data[i];
                   const yPoint = -elementArea.right * d;
 
-                  if (idx2 === 0) {
+                  if (idx2 === 0 && length !== 1) {
                     ctx.fillRect(xPoint, next, bw / 2, yPoint);
-                  } else if (idx2 === length - 1 || isLast) {
+                  } else if ((idx2 === length - 1 || isLast) && length !== 1) {
                     ctx.fillRect(xPoint - bw / 2, next, bw / 2, yPoint);
                   } else {
                     ctx.fillRect(xPoint - bw / 2, next, bw, yPoint);
@@ -492,12 +504,15 @@ class Draw {
                 } else if (typeof barColor === 'string') {
                   ctx.fillStyle = barColor;
                 }
-                const xPoint = idx2 * scale + seriesStartPos.x;
                 const yPoint = -elementArea.right * data;
 
-                if (idx2 === 0) {
+                if (idx2 === 0 && length !== 1) {
                   ctx.fillRect(xPoint, area.start.y, bw / 2, yPoint);
-                } else if (idx2 === length - 1 || isLast) {
+                } else if (
+                  minMax.bottom.max <= idx2 + 1 &&
+                  (idx2 === length - 1 || isLast) &&
+                  length !== 1
+                ) {
                   ctx.fillRect(xPoint - bw / 2, area.start.y, bw / 2, yPoint);
                 } else {
                   ctx.fillRect(xPoint - bw / 2, area.start.y, bw, yPoint);
@@ -530,10 +545,15 @@ class Draw {
             const isLast = idx2 === range.bottom;
             if (idx2 < lineData.length) {
               const data = lineData[idx2];
-              const xPoint = idx2 * scale + seriesStartPos.x;
+              let xPoint = idx2 * scale + seriesStartPos.x;
               const yPoint = Math.floor(
                 seriesStartPos.y - ((data - minMax.left.min) * size.height) / range.left,
               );
+              if (length === 1) {
+                // 데이터가 1개일 경우 그래프의 중앙에 위치
+                xPoint = size.width / 2 + seriesStartPos.x;
+              }
+
               if (idx2 > 0) {
                 ctx.lineTo(xPoint, yPoint);
                 ctx.stroke();
@@ -573,10 +593,15 @@ class Draw {
             const isLast = idx2 === range.bottom;
             if (idx2 < lineData.length) {
               const data = lineData[idx2];
-              const xPoint = idx2 * scale + seriesStartPos.x;
+              let xPoint = idx2 * scale + seriesStartPos.x;
               const yPoint = Math.floor(
                 seriesStartPos.y - ((data - minMax.right.min) * size.height) / range.left,
               );
+              if (length === 1) {
+                // 데이터가 1개일 경우 그래프의 중앙에 위치
+                xPoint = size.width / 2 + seriesStartPos.x;
+              }
+
               if (idx2 > 0) {
                 ctx.lineTo(xPoint, yPoint);
                 ctx.stroke();
