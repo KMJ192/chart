@@ -3,24 +3,28 @@ type GraphType = 'line' | 'bar' | 'line+bar';
 
 type Axis = {
   name: string;
-  max: number;
-  min: number;
   unitsPerTick: number;
   tickColor: string;
+  tickSize: Size;
+  tickPosition: 'in' | 'out' | 'middle';
   lineWidth: number;
   lineColor: string;
   guideLineColor: string;
   output: Array<string>;
+  font: string;
+  fontColor: string;
+  max?: number;
+  min?: number;
 };
 
 type Series = {
   name: string;
   lineColor: string;
   lineWidth: number;
-  linePointRadius: number;
-  lineData: Array<number>;
+  bulletSize: number;
   barWidth: number;
   barColor: Array<string | Array<string>>;
+  lineData: Array<number>;
   barData: Array<number | Array<number>>;
 };
 
@@ -55,17 +59,16 @@ type GraphParam = {
   nodeId: string;
   width: number;
   height: number;
-  padding: Partial<RectArea<number>>;
-  tickSize: Partial<BowlArea<Size>>;
-  tickPosition: Partial<BowlArea<'in' | 'out' | 'middle'>>;
+  padding: RectArea<number>;
+  axis: BowlArea<Axis>;
 };
 
 type GraphDataParam = {
-  axis: Partial<BowlArea<Partial<Axis>>>;
-  series: Partial<{
-    left: Array<Partial<Series>>;
-    right: Array<Partial<Series>>;
-  }>;
+  axis: BowlArea<Axis>;
+  series: {
+    left: Array<Series>;
+    right: Array<Series>;
+  };
 };
 
 interface RenderOptionsSetterParam extends RenderOptions {

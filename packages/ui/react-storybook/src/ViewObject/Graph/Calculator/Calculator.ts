@@ -1,69 +1,14 @@
 import { cloneDeep } from 'lodash';
 
-import type { CalculatorParam } from './types';
-import type {
-  Axis,
-  GraphDataParam,
-  RenderOptions,
-  RenderOptionsSetterParam,
-  Series,
-} from '../types';
+import type { AxisStyleType, CalculatorParam } from './types';
+import type { Axis, GraphDataParam, RenderOptions, RenderOptionsSetterParam } from '../types';
 
 // 데이터 연산
 class Calculator {
   // canvas padding
   private padding: RectArea<number>;
 
-  private axisStyle: BowlArea<{
-    lineWidth: number;
-    lineColor: string;
-    tickSize: Size;
-    tickPosition: 'in' | 'out' | 'middle';
-    tickColor: string;
-    font: string;
-    fontColor: string;
-    guideLineColor: string;
-  }> = {
-    bottom: {
-      lineWidth: 1,
-      lineColor: '#000',
-      tickSize: {
-        width: 1,
-        height: 3,
-      },
-      tickColor: '#000',
-      tickPosition: 'out',
-      font: '14px sans-serif',
-      fontColor: '#000',
-      guideLineColor: '#E2E2E2',
-    },
-    left: {
-      lineWidth: 1,
-      lineColor: '#000',
-      tickSize: {
-        width: 1,
-        height: 3,
-      },
-      tickColor: '#000',
-      tickPosition: 'out',
-      font: '14px sans-serif',
-      fontColor: '#000',
-      guideLineColor: '#E2E2E2',
-    },
-    right: {
-      lineWidth: 1,
-      lineColor: '#000',
-      tickSize: {
-        width: 1,
-        height: 3,
-      },
-      tickColor: '#000',
-      tickPosition: 'out',
-      font: '14px sans-serif',
-      fontColor: '#000',
-      guideLineColor: '#E2E2E2',
-    },
-  };
+  private axisStyle: BowlArea<AxisStyleType>;
 
   // axis별 최대값
   private max: BowlArea<number> = {
@@ -180,16 +125,45 @@ class Calculator {
     right: [],
   };
 
-  constructor({ padding, tickSize }: CalculatorParam) {
+  constructor({ padding, axis }: CalculatorParam) {
     this.padding = padding;
 
     this.scale = 0;
 
     this.middlePosition = 0;
 
-    this.axisStyle.bottom.tickSize = tickSize.bottom;
-    this.axisStyle.left.tickSize = tickSize.left;
-    this.axisStyle.right.tickSize = tickSize.right;
+    this.axisStyle = {
+      bottom: {
+        lineWidth: axis.bottom.lineWidth,
+        lineColor: axis.bottom.lineColor,
+        tickSize: axis.bottom.tickSize,
+        tickPosition: axis.bottom.tickPosition,
+        tickColor: axis.bottom.tickColor,
+        font: axis.bottom.font,
+        fontColor: axis.bottom.fontColor,
+        guideLineColor: axis.bottom.guideLineColor,
+      },
+      left: {
+        lineWidth: axis.left.lineWidth,
+        lineColor: axis.left.lineColor,
+        tickSize: axis.left.tickSize,
+        tickPosition: axis.left.tickPosition,
+        tickColor: axis.left.tickColor,
+        font: axis.left.font,
+        fontColor: axis.left.fontColor,
+        guideLineColor: axis.left.guideLineColor,
+      },
+      right: {
+        lineWidth: axis.right.lineWidth,
+        lineColor: axis.right.lineColor,
+        tickSize: axis.right.tickSize,
+        tickPosition: axis.right.tickPosition,
+        tickColor: axis.right.tickColor,
+        font: axis.right.font,
+        fontColor: axis.right.fontColor,
+        guideLineColor: axis.right.guideLineColor,
+      },
+    };
   }
 
   set renderOptionSetter(renderOption: Partial<RenderOptionsSetterParam>) {
@@ -289,6 +263,7 @@ class Calculator {
     }
   }
 
+  // =============== Getter ===============
   get scaleGetter() {
     return this.scale;
   }
@@ -372,26 +347,12 @@ class Calculator {
   get axisOutputArrGetter(): BowlArea<Array<string>> {
     return this.axisOutputArray;
   }
+  // =============== Getter ===============
 
-  // eslint-disable-next-line class-methods-use-this
-  public validationCheck = (data?: GraphDataParam) => {
-    // 1. 그냥 데이터가 없음 -> throw
-    if (!data) throw Error('Necessary value : axis info, series info');
-
-    // 2. axis 정보가 없음 -> throw
-    if (!data.axis) throw Error('Necessary value : axis info');
-
-    // 3. left y축 정보가 없음 -> throw
-    if (!data.axis.left) throw Error('Necessary value : left axis info');
-
-    // 4. bottom x축 정보가 없음 -> throw
-    if (!data.axis.bottom) throw Error('Necessary value : bottom axis info');
-  };
-
-  public setAxisStyle = (axis: Partial<BowlArea<Partial<Axis>>>) => {
-    this.axisStyle.bottom.lineWidth = axis.bottom?.lineWidth || 1;
-    this.axisStyle.left.lineWidth = axis.left?.lineWidth || 1;
-    this.axisStyle.right.lineWidth = axis.right?.lineWidth || 1;
+  public setAxisStyle = (axis: BowlArea<Axis>) => {
+    this.axisStyle.bottom.lineWidth = axis.bottom.lineWidth;
+    this.axisStyle.left.lineWidth = axis.left.lineWidth;
+    this.axisStyle.right.lineWidth = axis.right.lineWidth;
   };
 
   public setMinMax = (data: GraphDataParam) => {
@@ -415,29 +376,29 @@ class Calculator {
 
     // ======= 1. max, min 입력 여부 및 입력값 확인 =======
     // ===== 1-1. left axis =====
-    if (typeof axis.left?.max === 'number') {
+    if (typeof axis.left.max === 'number') {
       this.max.left = axis.left.max;
       isSet.left.max = true;
     }
-    if (typeof axis.left?.min === 'number') {
+    if (typeof axis.left.min === 'number') {
       this.min.left = axis.left.min;
       isSet.left.min = true;
     }
     // ===== 1-2. bottom axis =====
-    if (typeof axis.right?.max === 'number') {
+    if (typeof axis.right.max === 'number') {
       this.max.right = axis.right.max;
       isSet.right.max = true;
     }
-    if (typeof axis.right?.min === 'number') {
+    if (typeof axis.right.min === 'number') {
       this.min.right = axis.right.min;
       isSet.right.min = true;
     }
     // ===== 1-3. right axis =====
-    if (typeof axis.bottom?.max === 'number') {
+    if (typeof axis.bottom.max === 'number') {
       this.max.bottom = axis.bottom.max;
       isSet.bottom.max = true;
     }
-    if (typeof axis.bottom?.min === 'number') {
+    if (typeof axis.bottom.min === 'number') {
       this.min.bottom = axis.bottom.min;
       isSet.bottom.min = true;
     }
@@ -452,124 +413,115 @@ class Calculator {
     ) {
       const tmp = cloneDeep(isSet);
       // 2-1. left axis 참조 -> left y축 및 종속 x축(top or bottom)의 max, min
-      if (Array.isArray(series.left) && (!isSet.left.max || !isSet.left.min || !isSet.bottom.max)) {
-        for (let i = 0; i < series.left.length; i++) {
-          const s = series.left[i];
+      if (!isSet.left.max || !isSet.left.min || !isSet.bottom.max) {
+        for (let idx1 = 0; idx1 < series.left.length; idx1++) {
+          const s = series.left[idx1];
 
-          const isLineData = Array.isArray(s.lineData);
-          const isBarData = Array.isArray(s.barData);
           // ===== x축의 max 설정 =====
-          if (isLineData && !isSet.bottom.max) {
-            this.max.bottom = Math.max(s.lineData?.length || 0);
+          if (!isSet.bottom.max) {
+            this.max.bottom = Math.max(this.max.bottom, s.lineData?.length || 0);
             tmp.bottom.max = true;
           }
-          if (isBarData && !isSet.bottom.max) {
-            this.max.bottom = Math.max(s.barData?.length || 0);
+          if (!isSet.bottom.max) {
+            this.max.bottom = Math.max(this.max.bottom, s.barData?.length || 0);
             tmp.bottom.max = true;
           }
           // left y축 max, min 설정
           if (!isSet.left.max || !isSet.left.min) {
-            s.lineData?.forEach((_data: number) => {
+            for (let idx2 = 0; idx2 < s.lineData.length; idx2++) {
+              const d = s.lineData[idx2];
+
               if (!isSet.left.max) {
-                this.max.left = Math.max(this.max.left, _data);
+                this.max.left = Math.max(this.max.left, d);
                 tmp.left.max = true;
               }
               if (!isSet.left.min) {
-                this.min.left = Math.min(this.min.left, _data);
+                this.min.left = Math.min(this.min.left, d);
                 tmp.left.min = true;
               }
-            });
-            s.barData?.forEach((_data: number | number[]) => {
-              if (Array.isArray(_data)) {
-                let all = 0;
-                _data.forEach((d: number) => {
-                  all += d;
-                  if (!isSet.left.min) {
-                    this.min.left = Math.min(this.min.left, d);
-                    tmp.left.min = true;
-                  }
-                });
-                if (!isSet.left.max) {
-                  this.max.left = Math.max(this.max.left, all);
-                  tmp.left.max = true;
-                }
+            }
+
+            for (let idx2 = 0; idx2 < s.barData.length; idx2++) {
+              const d = s.barData[idx2];
+              let barData = [];
+              if (Array.isArray(d)) {
+                barData = d;
               } else {
-                if (!isSet.left.max) {
-                  this.max.left = Math.max(this.max.left, _data);
-                  tmp.left.max = true;
-                }
+                barData.push(d);
+              }
+
+              let all = 0;
+              barData.forEach((bd: number) => {
+                all += bd;
                 if (!isSet.left.min) {
-                  this.min.left = Math.min(this.min.left, _data);
+                  this.min.left = Math.min(this.min.left, bd);
                   tmp.left.min = true;
                 }
+              });
+              if (!isSet.left.max) {
+                this.max.left = Math.max(this.max.left, all);
+                tmp.left.max = true;
               }
-            });
+            }
           }
         }
       }
 
       // 2-2. right axis 참조 -> right y축 및 종속 x축(top or bottom)의 max, min
-      if (
-        Array.isArray(series.right) &&
-        (!isSet.right.max || !isSet.right.min || !isSet.bottom.max)
-      ) {
-        for (let i = 0; i < series.right.length; i++) {
-          const s = series.right[i];
+      if (!isSet.right.max || !isSet.right.min || !isSet.bottom.max) {
+        for (let idx1 = 0; idx1 < series.right.length; idx1++) {
+          const s = series.right[idx1];
 
-          const isLineData = Array.isArray(s.lineData);
-          const isBarData = Array.isArray(s.barData);
           // ===== x축의 max 설정 =====
-          if (isLineData && !isSet.bottom.max) {
-            this.max.bottom = Math.max(s.lineData?.length || 0);
+          if (!isSet.bottom.max) {
+            this.max.bottom = Math.max(this.max.bottom, s.lineData.length);
             tmp.bottom.max = true;
           }
-          if (isBarData && !isSet.bottom.max) {
-            this.max.bottom = Math.max(s.barData?.length || 0);
+          if (!isSet.bottom.max) {
+            this.max.bottom = Math.max(this.max.bottom, s.barData.length);
             tmp.bottom.max = true;
           }
 
           // right y축 max, min 설정
           if (!isSet.right.max || !isSet.right.min) {
-            s.lineData?.forEach((_data: number) => {
+            for (let idx2 = 0; idx2 < s.lineData.length; idx2++) {
+              const d = s.lineData[idx2];
               if (!isSet.right.max) {
-                this.max.right = Math.max(this.max.right, _data);
+                this.max.right = Math.max(this.max.right, d);
                 tmp.right.max = true;
               }
               if (!isSet.right.min) {
-                this.min.right = Math.min(this.min.right, _data);
+                this.min.right = Math.min(this.min.right, d);
                 tmp.right.min = true;
               }
-            });
-            s.barData?.forEach((_data: number | number[]) => {
-              if (Array.isArray(_data)) {
-                let all = 0;
-                _data.forEach((d: number) => {
-                  all += d;
-                  if (!isSet.right.min) {
-                    this.min.right = Math.min(this.min.right, d);
-                    tmp.right.min = true;
-                  }
-                });
+            }
+            for (let idx2 = 0; idx2 < s.barData.length; idx2++) {
+              const d = s.barData[idx2];
+              let barData = [];
+              if (Array.isArray(d)) {
+                barData = d;
+              } else {
+                barData.push(d);
+              }
+              let all = 0;
+              barData.forEach((bd: number) => {
+                all += bd;
+                if (!isSet.right.min) {
+                  this.min.right = Math.min(this.min.right, bd);
+                  tmp.right.min = true;
+                }
                 if (!isSet.right.max) {
                   this.max.right = Math.max(this.max.right, all);
                   tmp.right.max = true;
                 }
-              } else {
-                if (!isSet.right.max) {
-                  this.max.right = Math.max(this.max.right, _data);
-                  tmp.right.max = true;
-                }
-                if (!isSet.right.min) {
-                  this.min.right = Math.min(this.min.right, _data);
-                  tmp.right.min = true;
-                }
-              }
-            });
+              });
+            }
           }
         }
       }
+
       // ===== x축 min 값 세팅 =====
-      if (!isSet.bottom.min) {
+      if (isSet.bottom.min === false) {
         if (this.max.bottom < 0) {
           this.min.bottom = this.max.bottom;
         } else {
@@ -583,50 +535,67 @@ class Calculator {
       isSet.right = cloneDeep(tmp.right);
     }
 
-    if (!isSet.left.max) throw Error(`left y axis의 최대값을 특정할 수 없습니다.`);
-    if (!isSet.left.min) throw Error(`left y axis의 최소값을 특정할 수 없습니다.`);
-    if (!isSet.right.max) throw Error(`right y axis의 최대값을 특정할 수 없습니다.`);
-    if (!isSet.right.min) throw Error(`right y axis의 최소값을 특정할 수 없습니다.`);
-    if (!isSet.bottom.max) throw Error(`bottom x axis의 최대값을 특정할 수 없습니다.`);
-    if (!isSet.bottom.min) throw Error(`bottom x axis의 최소값을 특정할 수 없습니다.`);
+    if (!isSet.left.max) {
+      this.max.left = 0;
+    }
+    if (!isSet.left.min) {
+      this.min.left = 0;
+    }
+    if (!isSet.right.max) {
+      this.max.right = 0;
+    }
+    if (!isSet.right.min) {
+      this.min.right = 0;
+    }
+    if (!isSet.bottom.max) {
+      this.max.bottom = 0;
+    }
+    if (!isSet.bottom.min) {
+      this.min.bottom = 0;
+    }
   };
 
-  public setRange = (axis: Partial<BowlArea<Partial<Axis>>>) => {
+  public setRange = (axis: BowlArea<Axis>) => {
     // 입력된 output 배열이 있을 경우 range가 변경되어야 하므로 먼저 설정
-    if (axis.bottom?.output && Array.isArray(axis.bottom.output)) {
-      this.axisOutputArray.bottom = axis.bottom.output;
-    }
-    if (axis.left?.output && Array.isArray(axis.left.output)) {
-      this.axisOutputArray.left = axis.left.output;
-    }
-    if (axis.right?.output && Array.isArray(axis.right.output)) {
-      this.axisOutputArray.right = axis.right.output;
-    }
 
-    if (this.axisOutputArray.bottom.length > 0) {
+    this.axisOutputArray.bottom = axis.bottom.output;
+
+    this.axisOutputArray.left = axis.left.output;
+
+    this.axisOutputArray.right = axis.right.output;
+
+    const isRangeOfOutputArrayBot =
+      this.axisOutputArray.bottom.length > this.max.bottom - this.min.bottom;
+    if (isRangeOfOutputArrayBot) {
       this.range.bottom = this.axisOutputArray.bottom.length - 1;
     } else {
       this.range.bottom = this.max.bottom - this.min.bottom - 1;
     }
-    if (this.axisOutputArray.left.length > 0) {
+
+    const isRangeOfOutputArrayLeft =
+      this.axisOutputArray.left.length > this.max.left - this.min.left;
+    if (isRangeOfOutputArrayLeft) {
       this.range.left = this.axisOutputArray.left.length - 1;
     } else {
       this.range.left = this.max.left - this.min.left;
     }
-    if (this.axisOutputArray.right.length > 0) {
+
+    const isRangeOfOutputArrayRight =
+      this.axisOutputArray.right.length > this.max.right - this.min.right;
+    if (isRangeOfOutputArrayRight) {
       this.range.right = this.axisOutputArray.right.length - 1;
     } else {
       this.range.right = this.max.right - this.min.right;
     }
 
-    const leftUnitPerTick = axis.left?.unitsPerTick || 1;
+    const leftUnitPerTick = axis.left.unitsPerTick;
     const leftMod = this.range.left % leftUnitPerTick;
     if (leftMod !== 0) {
       this.max.left += leftUnitPerTick - leftMod;
       this.range.left = this.max.left - this.min.left;
     }
 
-    const rightUnitPerTick = axis.right?.unitsPerTick || 1;
+    const rightUnitPerTick = axis.right.unitsPerTick;
     const rightMod = this.range.right % rightUnitPerTick;
     if (rightMod !== 0) {
       this.max.right += rightUnitPerTick - rightMod;

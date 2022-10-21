@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash';
+import _ from 'lodash';
 
 import Canvas from '../Canvas';
 import Calculator from './Calculator';
@@ -30,20 +30,19 @@ class Graph {
     },
   ];
 
-  private canvasSize: Size = {
-    width: 1800,
-    height: 700,
-  };
+  private canvasSize: Size;
 
   private data?: GraphDataParam;
 
   private renderOptions?: Partial<RenderOptions>;
 
-  constructor({ nodeId, width, height, padding, tickSize }: Partial<GraphParam>) {
+  constructor({ nodeId, width, height, padding, axis }: GraphParam) {
     if (!nodeId) throw Error('Necessary value : nodeId ');
 
-    this.canvasSize.width = width || this.canvasSize.width;
-    this.canvasSize.height = height || this.canvasSize.height;
+    this.canvasSize = {
+      width,
+      height,
+    };
 
     this.canvas = new Canvas({
       nodeId,
@@ -54,25 +53,12 @@ class Graph {
 
     this.calculator = new Calculator({
       padding: {
-        top: padding?.top || 10,
-        bottom: padding?.bottom || 10,
-        left: padding?.left || 10,
-        right: padding?.right || 10,
+        top: padding.top,
+        bottom: padding.bottom,
+        left: padding.left,
+        right: padding.right,
       },
-      tickSize: {
-        bottom: {
-          width: tickSize?.bottom?.width || 1,
-          height: tickSize?.bottom?.height || 7,
-        },
-        left: {
-          width: tickSize?.left?.width || 1,
-          height: tickSize?.left?.height || 7,
-        },
-        right: {
-          width: tickSize?.right?.width || 1,
-          height: tickSize?.right?.height || 7,
-        },
-      },
+      axis,
     });
 
     this.drawObj = new Draw({ calculator: this.calculator });
@@ -89,8 +75,6 @@ class Graph {
       axis: this.renderOptions?.axis,
       data: this.data,
     };
-    // 3. 데이터 유효성 검사
-    this.calculator.validationCheck(this.data);
 
     if (this.data) {
       // 4. 최대값 최소값 설정
@@ -136,11 +120,11 @@ class Graph {
     };
   };
 
-  public render(data: GraphDataParam, renderOptions?: Partial<RenderOptions>) {
+  public render(data: GraphDataParam, renderOptions?: RenderOptions) {
     this.canvas.appendCanvasNode();
 
-    const isUpdateData = !isEqual(this.data, data);
-    const isUpdateRenderOption = !isEqual(this.renderOptions, renderOptions);
+    const isUpdateData = !_.isEqual(this.data, data);
+    const isUpdateRenderOption = !_.isEqual(this.renderOptions, renderOptions);
 
     if (!isUpdateData && !isUpdateRenderOption) {
       return null;
@@ -154,9 +138,11 @@ class Graph {
       this.renderOptions = renderOptions;
     }
 
-    this.canvas.addEvents(this.canvasResize);
+    if (isUpdateData || isUpdateRenderOption) {
+      this.canvas.addEvents(this.canvasResize);
 
-    this.draw();
+      this.draw();
+    }
 
     return () => {
       this.canvas.removeEvents();

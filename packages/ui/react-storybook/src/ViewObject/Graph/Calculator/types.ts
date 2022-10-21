@@ -1,6 +1,19 @@
+import type { Axis } from '../types';
+
 type CalculatorParam = {
   padding: RectArea<number>;
-  tickSize: BowlArea<Size>;
+  axis: BowlArea<Axis>;
 };
 
-export { CalculatorParam };
+type AxisStyleType = {
+  lineWidth: number;
+  lineColor: string;
+  tickSize: Size;
+  tickPosition: 'in' | 'out' | 'middle';
+  tickColor: string;
+  font: string;
+  fontColor: string;
+  guideLineColor: string;
+};
+
+export type { AxisStyleType, CalculatorParam };
