@@ -75,7 +75,7 @@ class Draw {
   };
 
   // Draw axis information
-  public drawAxisInfo = (layer: CanvasLayer, axis: Partial<BowlArea<Partial<Axis>>>) => {
+  public drawAxisInfo = (layer: CanvasLayer, axis: BowlArea<Axis>) => {
     const renderOption = this.calculator.renderOptionGetter;
     if (!renderOption.axis.bottom && !renderOption.axis.left && !renderOption.axis.right) {
       return;
@@ -103,12 +103,10 @@ class Draw {
         guideLineColor,
       } = axisStyle.bottom;
 
-      const unitsPerTick = axis.bottom?.unitsPerTick || 1;
+      const { unitsPerTick } = axis.bottom;
       const isLastModuler = range.bottom % unitsPerTick !== 0;
 
       const isOutputArr = axisOutputArr.bottom.length > 0;
-      const step = isOutputArr ? 1 : unitsPerTick;
-      // const dest = isOutputArr ? (axis.bottom?.output as Array<string>).length : range.bottom;
       const dest = range.bottom;
 
       ctx.lineWidth = tickWidht;
@@ -126,7 +124,7 @@ class Draw {
         tickOut = tickHeight / 2;
       }
 
-      for (let i = 0; i <= dest; i += step) {
+      for (let i = 0; i <= dest; i += unitsPerTick) {
         const xPoint = crispPixel(i * elementArea.bottom + startPoint.bottom.x, tickWidht);
         if (renderOption.axisInfo.bottom.outputText) {
           let value = '';
@@ -224,7 +222,7 @@ class Draw {
         guideLineColor,
       } = axisStyle.left;
 
-      const unitsPerTick = axis.left?.unitsPerTick || 1;
+      const { unitsPerTick } = axis.left;
 
       ctx.lineWidth = tickWidht;
       ctx.font = font;
@@ -246,7 +244,7 @@ class Draw {
 
         if (renderOption.axisInfo.left.outputText) {
           let value = '';
-          if (axis.left?.output && axis.left.output[i] !== undefined) {
+          if (axis.left.output[i] !== undefined) {
             value = axis.left.output[i];
           } else {
             value = String(i);
@@ -291,7 +289,7 @@ class Draw {
         guideLineColor,
       } = axisStyle.right;
 
-      const unitsPerTick = axis.right?.unitsPerTick || 1;
+      const { unitsPerTick } = axis.right;
 
       ctx.strokeStyle = tickColor;
       ctx.lineWidth = tickWidht;
@@ -314,7 +312,7 @@ class Draw {
 
         if (renderOption.axisInfo.right.outputText) {
           let value = '';
-          if (axis.right?.output && axis.right.output[i] !== undefined) {
+          if (axis.right.output[i] !== undefined) {
             value = axis.right.output[i];
           } else {
             value = String(i);
@@ -357,10 +355,10 @@ class Draw {
 
   public drawSeries = (
     layer: CanvasLayer,
-    series: Partial<{
-      left: Array<Partial<Series>>;
-      right: Array<Partial<Series>>;
-    }>,
+    series: {
+      left: Array<Series>;
+      right: Array<Series>;
+    },
   ) => {
     const { ctx } = layer;
 
@@ -379,14 +377,14 @@ class Draw {
 
     // 1. draw bar 그래프 (left y axis)
     if (Array.isArray(series.left)) {
-      const { left: yAxis } = series;
-      for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
-        const { name, barData, barColor, barWidth } = yAxis[idx1];
+      const { left: leftYAxis } = series;
+      for (let idx1 = 0; idx1 < leftYAxis.length; idx1++) {
+        const { name, barData, barColor, barWidth } = leftYAxis[idx1];
         if (barData !== undefined) {
-          let length = Array.isArray(barData) ? barData.length : 0;
-          length = Math.max(axisOutputArr.bottom.length, length);
-          const bw = typeof barWidth === 'number' ? barWidth : 30;
-          for (let idx2 = 0; idx2 <= length; idx2++) {
+          let barDataLen = barData.length;
+          barDataLen = Math.max(axisOutputArr.bottom.length, barDataLen);
+          const bw = barWidth;
+          for (let idx2 = 0; idx2 <= barDataLen; idx2++) {
             const isLast = idx2 === range.bottom;
             if (idx2 < barData.length) {
               const dataUnit = barData[idx2];
@@ -398,15 +396,15 @@ class Draw {
               }
 
               let xPoint = idx2 * scale + seriesStartPos.x;
-              if (length === 1) {
+              if (barDataLen === 1) {
                 // 데이터가 1개일 경우 그래프의 중앙에 위치
                 xPoint = size.width / 2 + seriesStartPos.x;
               }
               let next = area.start.y;
               for (let i = 0; i < data.length; i++) {
-                if (Array.isArray(barColor) && Array.isArray(barColor[idx2])) {
-                  ctx.fillStyle = barColor[idx2][i];
-                } else if (Array.isArray(barColor) && typeof barColor[idx2] === 'string') {
+                if (Array.isArray(barColor[idx2])) {
+                  ctx.fillStyle = barColor[idx2][i] || 'rgb(204, 204, 204)';
+                } else if (typeof barColor[idx2] === 'string') {
                   ctx.fillStyle = String(barColor[idx2]);
                 } else if (typeof barColor === 'string') {
                   ctx.fillStyle = barColor;
@@ -416,9 +414,10 @@ class Draw {
                 const d = data[i];
                 const yPoint = -elementArea.left * d;
 
-                if (idx2 === 0 && length !== 1) {
+                if (idx2 === 0 && barDataLen !== 1) {
                   ctx.fillRect(xPoint, next, bw / 2, yPoint);
-                } else if ((idx2 === length - 1 || isLast) && length !== 1) {
+                  // } else if ((idx2 === barDataLen - 1 || isLast) && barDataLen !== 1) {
+                } else if (isLast) {
                   ctx.fillRect(xPoint - bw / 2, next, bw / 2, yPoint);
                 } else {
                   ctx.fillRect(xPoint - bw / 2, next, bw, yPoint);
@@ -436,13 +435,11 @@ class Draw {
 
     // 2. draw bar 그래프 (right y axis)
     if (Array.isArray(series.right)) {
-      const { right: yAxis } = series;
-      for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
-        const { name, barData, barColor, barWidth } = yAxis[idx1];
+      const { right: rightYAxis } = series;
+      for (let idx1 = 0; idx1 < rightYAxis.length; idx1++) {
+        const { name, barData, barColor, barWidth } = rightYAxis[idx1];
         if (barData !== undefined) {
-          let length = Array.isArray(barData) ? barData.length : 0;
-          length = Math.max(axisOutputArr.bottom.length, length);
-          const bw = typeof barWidth === 'number' ? barWidth : 30;
+          const length = Math.max(axisOutputArr.bottom.length, barData.length);
 
           for (let idx2 = 0; idx2 <= length; idx2++) {
             const isLast = idx2 === range.bottom;
@@ -461,9 +458,9 @@ class Draw {
               }
               let next = area.start.y;
               for (let i = 0; i < data.length; i++) {
-                if (Array.isArray(barColor) && Array.isArray(barColor[idx2])) {
-                  ctx.fillStyle = barColor[idx2][i];
-                } else if (Array.isArray(barColor) && typeof barColor[idx2] === 'string') {
+                if (Array.isArray(barColor[idx2])) {
+                  ctx.fillStyle = barColor[idx2][i] || 'rgb(204, 204, 204)';
+                } else if (typeof barColor[idx2] === 'string') {
                   ctx.fillStyle = String(barColor[idx2]);
                 } else if (typeof barColor === 'string') {
                   ctx.fillStyle = barColor;
@@ -474,11 +471,12 @@ class Draw {
                 const yPoint = -elementArea.right * d;
 
                 if (idx2 === 0 && length !== 1) {
-                  ctx.fillRect(xPoint, next, bw / 2, yPoint);
-                } else if ((idx2 === length - 1 || isLast) && length !== 1) {
-                  ctx.fillRect(xPoint - bw / 2, next, bw / 2, yPoint);
+                  ctx.fillRect(xPoint, next, barWidth / 2, yPoint);
+                  // } else if ((idx2 === length - 1 || isLast) && length !== 1) {
+                } else if (isLast) {
+                  ctx.fillRect(xPoint - barWidth / 2, next, barWidth / 2, yPoint);
                 } else {
-                  ctx.fillRect(xPoint - bw / 2, next, bw, yPoint);
+                  ctx.fillRect(xPoint - barWidth / 2, next, barWidth, yPoint);
                 }
                 next += yPoint;
               }
@@ -493,21 +491,21 @@ class Draw {
 
     // 3. draw line 그래프 (left y axis)
     if (Array.isArray(series.left)) {
-      const { left: yAxis } = series;
-      for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
-        const { name, bulletSize, lineColor, lineWidth, lineData } = yAxis[idx1];
+      const { left: leftYAxis } = series;
+      for (let idx1 = 0; idx1 < leftYAxis.length; idx1++) {
+        const { name, bulletSize, lineColor, lineWidth, lineData } = leftYAxis[idx1];
         if (lineData !== undefined) {
-          ctx.strokeStyle = lineColor || '#000';
-          ctx.fillStyle = lineColor || '#000';
-          ctx.lineWidth = lineWidth || 1;
+          ctx.strokeStyle = lineColor;
+          ctx.fillStyle = lineColor;
+          ctx.lineWidth = lineWidth;
 
-          const length = Array.isArray(lineData) ? lineData.length : 0;
+          const { length } = lineData;
 
           ctx.beginPath();
           ctx.moveTo(seriesStartPos.x, seriesStartPos.y);
           for (let idx2 = 0; idx2 < length; idx2++) {
             const isLast = idx2 === range.bottom;
-            if (idx2 < lineData.length) {
+            if (idx2 < length) {
               const data = lineData[idx2];
               let xPoint = idx2 * scale + seriesStartPos.x;
               const yPoint = Math.floor(
@@ -541,15 +539,15 @@ class Draw {
 
     // 4. draw line 그래프 (right y axis)
     if (Array.isArray(series.right)) {
-      const { right: yAxis } = series;
-      for (let idx1 = 0; idx1 < yAxis.length; idx1++) {
-        const { name, bulletSize, lineColor, lineWidth, lineData } = yAxis[idx1];
+      const { right: rightYAxis } = series;
+      for (let idx1 = 0; idx1 < rightYAxis.length; idx1++) {
+        const { name, bulletSize, lineColor, lineWidth, lineData } = rightYAxis[idx1];
         if (lineData !== undefined) {
-          ctx.strokeStyle = lineColor || '#000';
-          ctx.fillStyle = lineColor || '#000';
-          ctx.lineWidth = lineWidth || 1;
+          ctx.strokeStyle = lineColor;
+          ctx.fillStyle = lineColor;
+          ctx.lineWidth = lineWidth;
 
-          const length = Array.isArray(lineData) ? lineData.length : 0;
+          const { length } = lineData;
 
           ctx.beginPath();
           ctx.moveTo(seriesStartPos.x, seriesStartPos.y);
@@ -570,7 +568,7 @@ class Draw {
                 ctx.lineTo(xPoint, yPoint);
                 ctx.stroke();
               }
-              if (typeof bulletSize === 'number' && bulletSize > 0) {
+              if (bulletSize > 0) {
                 ctx.beginPath();
                 ctx.arc(xPoint, yPoint, bulletSize, 0, 2 * Math.PI, false);
                 ctx.fill();
