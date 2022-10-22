@@ -1,5 +1,5 @@
-interface GraphType {
+type GraphType = {
   type: 'line';
-}
+};
 
 export type { GraphType };

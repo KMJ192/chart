@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Story } from '@storybook/react';
 import Graph from './Graph';
 
@@ -18,6 +16,4 @@ const graphTemplate = (args: GraphType): JSX.Element => {
 };
 
 export const lineGraph: Story<GraphType> = graphTemplate.bind({});
-lineGraph.args = {
-  type: 'line',
-};
+lineGraph.args = {};

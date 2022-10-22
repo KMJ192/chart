@@ -4,7 +4,7 @@ import React, { useEffect, useMemo } from 'react';
 import { default as LineGraph } from '@src/ViewObject/Graph';
 
 // utils
-import { makeCommonBowlArea, makeCommonRectArea } from '@src/utils/utils';
+import { makeCommonRectArea } from '@src/utils/utils';
 
 // types
 import type { Axis, Series } from '@src/ViewObject/Graph/types';
@@ -148,7 +148,11 @@ const series: {
   ],
 };
 
-function Graph() {
+type Props = {
+  type: 'line';
+};
+
+function Graph({ type }: Props) {
   const graph = useMemo(
     () =>
       new LineGraph({
