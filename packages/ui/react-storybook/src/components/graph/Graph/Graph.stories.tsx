@@ -1,12 +1,10 @@
-import React from 'react';
-
 import { Story } from '@storybook/react';
 import Graph from './Graph';
 
-import { GraphType } from './types';
+import type { GraphType } from './types';
 
 export default {
-  title: 'Graph',
+  title: 'Graph/LineGraph',
   component: Graph,
   parameters: {
     componentSubtitle: 'Graph',

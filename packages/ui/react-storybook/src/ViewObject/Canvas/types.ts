@@ -1,10 +1,10 @@
 import { Properties as CSSProperties } from 'csstype';
 
-interface CanvasLayerInfo {
+type CanvasLayerInfo = {
   type: string;
   id: string;
-  style?: Omit<Omit<CSSProperties, 'position'>, 'width'>;
-}
+  style: Omit<Omit<CSSProperties, 'position'>, 'width'>;
+};
 
 interface CanvasLayer extends Omit<CanvasLayerInfo, 'style'> {
   canvas: HTMLCanvasElement;
@@ -15,7 +15,7 @@ type CanvasParam = {
   nodeId: string;
   width: number;
   height: number;
-  canvasLayerInfo: CanvasLayerInfo[];
+  canvasLayerInfo: Array<CanvasLayerInfo>;
 };
 
 export type { CanvasParam, CanvasLayer, CanvasLayerInfo };

@@ -30,12 +30,12 @@ class Canvas {
       canvas.id = id;
       const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-      if (style !== undefined) {
-        // Set canvas style
-        Object.entries(style).forEach(([key, value]) => {
-          (canvas.style as ObjectType)[key] = value;
-        });
-      }
+      // Set canvas style
+      // if (style !== undefined) {
+      Object.entries(style).forEach(([key, value]) => {
+        (canvas.style as ObjectType)[key] = value;
+      });
+      // }
 
       canvas.style.position = 'absolute';
       canvas.style.width = '100%';
