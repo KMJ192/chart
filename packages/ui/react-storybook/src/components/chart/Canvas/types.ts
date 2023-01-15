@@ -5,10 +5,11 @@ import { Properties as CSSType } from 'csstype';
 type CanvasProperties = {
   width: number;
   height: number;
+  key: string | number;
   ref?: RefObject<HTMLCanvasElement>;
   id?: string;
   className?: string;
-  style?: Omit<Omit<CSSType, 'position'>, 'width'>;
+  style?: CSSType;
 };
 
 export type { CanvasProperties };

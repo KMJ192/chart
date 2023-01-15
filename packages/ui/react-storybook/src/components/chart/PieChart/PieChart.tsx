@@ -1,4 +1,49 @@
-function PieChart() {
-  return <div>PieChart</div>;
-}
+import { useRef, forwardRef } from 'react';
+import type { Properties as CSSType } from 'csstype';
+
+import CanvasLayer from '../Canvas/CanvasLayer';
+
+import type { CanvasProperties } from '../Canvas/types';
+
+import usePieChart from './usePieChart';
+
+import type { PieChartDataType } from '@src/view/Chart/PieChart';
+
+type Props = {
+  width: number;
+  height: number;
+  data: PieChartDataType;
+  id?: string;
+  className?: string;
+  style?: CSSType;
+};
+
+const PieChart = forwardRef<HTMLDivElement, Props>(
+  ({ width, height, id, data, className, style }, ref) => {
+    const canvasLayerRef = useRef<HTMLDivElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    const canvasPropertiesRef = useRef<Array<CanvasProperties>>([
+      {
+        width,
+        height,
+        key: 0,
+        ref: canvasRef,
+      },
+    ]);
+
+    usePieChart({ canvasLayerRef, canvasRef, data });
+
+    return (
+      <CanvasLayer
+        id={id}
+        className={className}
+        style={style}
+        ref={canvasLayerRef}
+        canvasLayer={canvasPropertiesRef.current}
+      />
+    );
+  },
+);
+
 export default PieChart;

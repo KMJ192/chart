@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Story } from '@storybook/react';
 import Canvas from './Canvas';
 
@@ -13,9 +11,9 @@ export default {
   },
 };
 
-const webGLTemplate = (args: CanvasTypes): JSX.Element => {
+const canvasTestTemplate = (args: CanvasTypes): JSX.Element => {
   return <Canvas {...args} />;
 };
 
-export const CanvasTest: Story<CanvasTypes> = webGLTemplate.bind({});
+export const CanvasTest: Story<CanvasTypes> = canvasTestTemplate.bind({});
 CanvasTest.args = {};

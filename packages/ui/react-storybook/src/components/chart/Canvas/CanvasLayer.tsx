@@ -1,13 +1,13 @@
 import { forwardRef } from 'react';
 
 import type { Properties as CSSType } from 'csstype';
-import Canvas from './Canvas';
 
+import Canvas from './Canvas';
 import type { CanvasProperties } from './types';
 
 type Props = {
-  id: string;
   canvasLayer: Array<CanvasProperties>;
+  id?: string;
   className?: string;
   style?: CSSType;
 };
@@ -15,16 +15,28 @@ type Props = {
 const CanvasLayer = forwardRef<HTMLDivElement, Props>(
   ({ id, className, canvasLayer, style }, ref) => {
     return (
-      <div id={id} className={className} style={style} ref={ref}>
-        {canvasLayer.map((info) => {
+      <div
+        id={id}
+        className={className}
+        style={{
+          ...style,
+          position: 'relative',
+        }}
+        ref={ref}
+      >
+        {canvasLayer.map((info, idx) => {
           return (
             <Canvas
+              key={`${info.key}-${idx}`}
               width={info.width}
               height={info.height}
               ref={info.ref}
               id={info.id}
               className={info.className}
-              style={info.style}
+              style={{
+                ...info.style,
+                position: 'absolute',
+              }}
             />
           );
         })}
@@ -34,6 +46,7 @@ const CanvasLayer = forwardRef<HTMLDivElement, Props>(
 );
 
 CanvasLayer.defaultProps = {
+  id: undefined,
   className: undefined,
   style: undefined,
 };

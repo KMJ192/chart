@@ -20,3 +20,14 @@ export function makeCommonBowlArea<T>(data: T): BowlArea<T> {
     right: data,
   };
 }
+
+export function RAF(callback: () => void) {
+  let nextFrameCallback = 0;
+
+  const nextExecution = () => {
+    window.cancelAnimationFrame(nextFrameCallback);
+    nextFrameCallback = window.requestAnimationFrame(callback);
+  };
+
+  return nextExecution;
+}
