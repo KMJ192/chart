@@ -18,7 +18,7 @@ module.exports = {
   viteFinal: async (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@src': path.resolve(__dirname, 'src'),
+      '@src': path.resolve(__dirname, '../src'),
       '@wasm': path.resolve(__dirname, '../wasm_module'),
     };
     config.plugins.push(wasmPack('./wasm_module'));
