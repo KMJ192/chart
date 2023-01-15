@@ -37,9 +37,9 @@
     ]
   },
   "scripts": {
-    "clear": "rm -rf .pnp.cjs .pnp.loader.mjs .yarnrc.yml .yarn",
+    "clear": "rm -rf .pnp.cjs .pnp.loader.mjs .yarnrc.yml .yarn packages/ui/react-storybook/node_modules",
     "start:react-sb": "yarn workspace @chart-library/react-storybook start",
     "start:chart-app": "yarn workspace @chart-library/chart-app dev"
   },
-  "packageManager": "yarn@3.2.3"
+  "packageManager": "yarn@3.3.1"
 }

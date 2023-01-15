@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 // eslint-disable-next-line import/no-named-default
 import { default as LineGraph } from '@src/ViewObject/Graph';

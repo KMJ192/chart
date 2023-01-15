@@ -3,13 +3,13 @@ import Graph from './Graph';
 
 import type { GraphType } from './types';
 
-export default {
-  title: 'Graph/LineGraph',
-  component: Graph,
-  parameters: {
-    componentSubtitle: 'Graph',
-  },
-};
+// export default {
+//   title: 'Graph/LineGraph',
+//   component: Graph,
+//   parameters: {
+//     componentSubtitle: 'Graph',
+//   },
+// };
 
 const graphTemplate = (args: GraphType): JSX.Element => {
   return <Graph {...args} />;

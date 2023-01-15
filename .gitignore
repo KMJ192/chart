@@ -42,3 +42,7 @@ next-env.d.ts
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# wasm
+packages/ui/react-storybook/wasm_module/target
+packages/ui/react-storybook/wasm_module/pkg
