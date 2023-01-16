@@ -13,14 +13,7 @@ type Props = {
 const Canvas = forwardRef<HTMLCanvasElement, Props>(
   ({ width, height, id, className, style }, ref) => {
     return (
-      <canvas
-        ref={ref}
-        width={width}
-        height={height}
-        id={id}
-        className={className}
-        style={style}
-      />
+      <canvas ref={ref} width={width} height={height} id={id} className={className} style={style} />
     );
   },
 );

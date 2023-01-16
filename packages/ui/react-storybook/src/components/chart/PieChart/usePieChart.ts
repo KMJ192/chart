@@ -26,7 +26,7 @@ function usePieChart({ canvasLayerRef, canvasRef, data }: Props) {
 
   useEffect(() => {
     if (pieChart) {
-      pieChart.initData(data);
+      pieChart.generate(data);
     }
   }, []);
 }

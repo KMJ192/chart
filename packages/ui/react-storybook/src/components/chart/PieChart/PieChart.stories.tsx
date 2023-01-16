@@ -19,21 +19,9 @@ export const PieChartTemplate: Story<Args> = pieChartTemplate.bind({});
 PieChartTemplate.args = {
   width: 1200,
   height: 700,
-  data: [
-    {
-      name: 'data1',
-      value: 10,
-      color: 'red',
-    },
-    {
-      name: 'data2',
-      value: 23,
-      color: 'green',
-    },
-    {
-      name: 'data3',
-      value: 43,
-      color: 'blue',
-    },
-  ],
+  data: {
+    name: ['data1', 'data2', 'data3'],
+    value: [10, 23, 43],
+    color: ['red', 'green', 'blue'],
+  },
 };
