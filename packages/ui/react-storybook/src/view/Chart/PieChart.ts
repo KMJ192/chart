@@ -1,11 +1,7 @@
 import Canvas from './Canvas';
 import type { CanvasLayer } from './Canvas';
+import Slider from '../Slider/Slider';
 
-// type DataType = Array<{
-//   name: string;
-//   value: number;
-//   color: string;
-// }>;
 type DataType = {
   total: number;
   // 반지름
@@ -13,7 +9,10 @@ type DataType = {
   // pie chart 시작 각도 => 0시, 3시, 6시, 9시
   startDegree: 0 | 3 | 6 | 9;
   name: Array<string>;
-  color: Array<string>;
+  color: Array<{
+    backgroundColor: string;
+    strokeColor: string;
+  }>;
   value: Array<number>;
 };
 
@@ -25,8 +24,14 @@ export default class PieChart {
   // Canvas object
   private canvas: Canvas;
 
+  // Slider object
+  private slider: Slider;
+
   // 출력 데이터
   private data: DataType;
+
+  // 나머지 데이터
+  private restData: number;
 
   constructor(params: Params) {
     this.data = {
@@ -38,16 +43,17 @@ export default class PieChart {
       value: [],
     };
 
+    this.restData = 0;
+
     this.canvas = new Canvas({ canvasLayer: params.canvasLayer });
+
+    this.slider = new Slider({ canvasLayer: params.canvasLayer });
   }
 
   public generate = (data: DataType) => {
     this.data = data;
-    let curTotal = this.data.total ?? 0;
-    if (typeof this.data.total !== 'number') {
-      this.data.total = this.data.value.reduce((a, b) => a + b);
-    }
 
+    // 시작 각도 계산
     let startDegree = 0;
     if (data.startDegree === 0) {
       startDegree = (Math.PI / 180) * -90;
@@ -67,9 +73,33 @@ export default class PieChart {
 
     const degree = 360;
 
-    const rate = this.data.value.slice().map((data) => {
-      const r = data / this.data.total;
-      return degree * r;
+    this.restData = this.data.total - this.data.value.reduce((a, b) => a + b);
+    const drawData: Array<{
+      value: number;
+      name: string;
+      backgroundColor: string;
+      strokeColor: string;
+      rate: number;
+    }> = [];
+    for (let i = 0; i < this.data.value.length; i++) {
+      const value = this.data.value[i];
+      const name = this.data.name[i];
+      const { backgroundColor, strokeColor } = this.data.color[i];
+      const rate = degree * (value / this.data.total);
+      drawData.push({
+        rate,
+        value,
+        name,
+        backgroundColor,
+        strokeColor,
+      });
+    }
+    drawData.push({
+      rate: degree * (this.restData / this.data.total),
+      value: this.restData,
+      name: '',
+      backgroundColor: '',
+      strokeColor: '',
     });
 
     let curDegree = 0;
@@ -78,52 +108,37 @@ export default class PieChart {
       y: height / 2,
     };
 
-    // this.test();
-    for (let i = 0; i < rate.length; i++) {
+    for (let i = 0; i < drawData.length; i++) {
+      const { rate } = drawData[i];
       ctx.save();
-      ctx.strokeStyle = '#FFFFFF';
       ctx.beginPath();
       ctx.moveTo(center.x, center.y);
-      const item = rate[i];
       let start = 0;
       let end = 0;
       if (i === 0) {
         start = startDegree + (Math.PI / 180) * 0;
-        end = startDegree + (Math.PI / 180) * item;
-        curDegree = item;
+        end = startDegree + (Math.PI / 180) * rate;
+        curDegree = rate;
       } else {
         start = startDegree + (Math.PI / 180) * curDegree;
-        end = startDegree + (Math.PI / 180) * (curDegree + item);
-        curDegree += item;
+        end = startDegree + (Math.PI / 180) * (curDegree + rate);
+        curDegree += rate;
       }
+
       ctx.arc(center.x, center.y, this.data.radius, start, end, false);
 
       ctx.closePath();
       ctx.stroke();
       ctx.restore();
     }
+
+    this.test();
   };
 
   private test = () => {
     const { canvas, ctx } = this.canvas.layer[0];
-
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-    const center = {
-      x: width / 2,
-      y: height / 2,
-    };
-    const startDeg = (Math.PI / 180) * -90;
-
-    let start = startDeg;
-    let end = startDeg + (Math.PI / 180) * 40;
-    ctx.clearRect(0, 0, width, height);
     ctx.save();
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.moveTo(center.x, center.y);
-    ctx.arc(center.x, center.y, 100, start, end, false);
-    ctx.closePath();
-    ctx.stroke();
+    ctx.scale(1.5, 1.5);
     ctx.restore();
   };
 }

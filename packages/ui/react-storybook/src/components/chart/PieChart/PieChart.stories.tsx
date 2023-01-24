@@ -1,7 +1,7 @@
 import { Story } from '@storybook/react';
 import PieChart from './PieChart';
 
-import type { Args } from './types';
+import type { StoryType } from './types';
 
 export default {
   title: 'Chart/PieChart',
@@ -11,11 +11,11 @@ export default {
   },
 };
 
-const pieChartTemplate = (args: Args): JSX.Element => {
+const pieChartTemplate = (args: StoryType): JSX.Element => {
   return <PieChart {...args} />;
 };
 
-export const PieChartTemplate: Story<Args> = pieChartTemplate.bind({});
+export const PieChartTemplate: Story<StoryType> = pieChartTemplate.bind({});
 PieChartTemplate.args = {
   width: 500,
   height: 300,
@@ -25,6 +25,19 @@ PieChartTemplate.args = {
     startDegree: 0,
     name: ['data1', 'data2', 'data3'],
     value: [10, 23, 33],
-    color: ['red', 'green', 'blue'],
+    color: [
+      {
+        backgroundColor: '#FF0000',
+        strokeColor: '#FFFFFF',
+      },
+      {
+        backgroundColor: '#00FF00',
+        strokeColor: '#FFFFFF',
+      },
+      {
+        backgroundColor: '#0000FF',
+        strokeColor: '#FFFFFF',
+      },
+    ],
   },
 };

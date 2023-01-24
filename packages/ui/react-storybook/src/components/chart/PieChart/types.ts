@@ -1,9 +1,5 @@
-import { PieChartDataType } from '@src/view/Chart/PieChart';
+import type { PieChartProps } from './PieChart';
 
-type Args = {
-  width: number;
-  height: number;
-  data: PieChartDataType;
-};
+type StoryType = PieChartProps;
 
-export type { Args };
+export type { StoryType };

@@ -48,4 +48,5 @@ const PieChart = forwardRef<HTMLDivElement, Props>(
   },
 );
 
+export type { Props as PieChartProps };
 export default PieChart;
