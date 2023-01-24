@@ -1,4 +1,4 @@
-import { useMemo, RefObject, useEffect } from 'react';
+import { RefObject, useEffect } from 'react';
 
 import PieChart from '@src/view/Chart/PieChart';
 import type { PieChartDataType } from '@src/view/Chart/PieChart';
@@ -10,7 +10,7 @@ type Props = {
 };
 
 function usePieChart({ canvasLayerRef, canvasRef, data }: Props) {
-  const pieChart = useMemo(() => {
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
       const canvasLayer = [
@@ -19,13 +19,7 @@ function usePieChart({ canvasLayerRef, canvasRef, data }: Props) {
           ctx: canvas.getContext('2d') as CanvasRenderingContext2D,
         },
       ];
-      return new PieChart({ canvasLayer });
-    }
-    return null;
-  }, []);
-
-  useEffect(() => {
-    if (pieChart) {
+      const pieChart = new PieChart({ canvasLayer });
       pieChart.generate(data);
     }
   }, []);

@@ -17,11 +17,14 @@ const pieChartTemplate = (args: Args): JSX.Element => {
 
 export const PieChartTemplate: Story<Args> = pieChartTemplate.bind({});
 PieChartTemplate.args = {
-  width: 1200,
-  height: 700,
+  width: 500,
+  height: 300,
   data: {
+    total: 100,
+    radius: 100,
+    startDegree: 0,
     name: ['data1', 'data2', 'data3'],
-    value: [10, 23, 43],
+    value: [10, 23, 33],
     color: ['red', 'green', 'blue'],
   },
 };

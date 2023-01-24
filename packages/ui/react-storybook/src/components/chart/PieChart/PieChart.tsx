@@ -1,4 +1,4 @@
-import { useRef, forwardRef } from 'react';
+import { useRef, forwardRef, useEffect } from 'react';
 import type { Properties as CSSType } from 'csstype';
 
 import CanvasLayer from '../Canvas/CanvasLayer';
@@ -17,6 +17,8 @@ type Props = {
   className?: string;
   style?: CSSType;
 };
+
+// https://lts0606.tistory.com/292
 
 const PieChart = forwardRef<HTMLDivElement, Props>(
   ({ width, height, id, data, className, style }, ref) => {

@@ -20,6 +20,10 @@ export default class Canvas {
     this.events = [];
   }
 
+  get layer() {
+    return this.canvasLayer;
+  }
+
   public correctionCanvas = RAF(() => {
     const dpr = window.devicePixelRatio;
 
